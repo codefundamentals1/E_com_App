@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { IoMdAdd , IoMdRemove } from "react-icons/io";
 import axios from 'axios';
 
-const CardOfcart = ({item}) => {
-
+const CardOfcart = ({item ,updateItemCount}) => {
+const [itemcount , setItemcount] = useState(item.count)
   
     const handleremovebutton = async (id) => {
       try {
         console.log("removing item "+id)
         const response = await axios.post('/api/getcart/remove', { getid: id });
         console.log("Item removed:", response.data);
+        updateItemCount(item.id, 0); // Update count in parent
+
       } catch (error) {
         console.error("Error removing item:", error);
       }
@@ -19,6 +21,9 @@ const CardOfcart = ({item}) => {
         console.log("removing item "+id)
         const response = await axios.post('/api/getcart/decrease', { getid: id });
         console.log("Item removed:", response.data);
+        { itemcount === 1?setItemcount(itemcount):        setItemcount(itemcount-1);
+        }
+        updateItemCount(item.id, item.count); // Update count in parent
       } catch (error) {
         console.error("Error removing item:", error);
       }
@@ -26,9 +31,11 @@ const CardOfcart = ({item}) => {
   
     const handleIncButton = async (id) => {
       try {
-        console.log("removing item "+id)
+        console.log("adding item "+id)
         const response = await axios.post('/api/add', { getid: id });
         console.log("Item added:", response.data);
+        setItemcount(itemcount+1);
+        updateItemCount(item.id, item.count + 1); // Update count in parent
       } catch (error) {
         console.error("Error addding item:", error);
       }
@@ -54,7 +61,7 @@ const CardOfcart = ({item}) => {
                   <IoMdRemove />
                   </button>
 
-                  <input type="text" id="counter-input" data-input-counter className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white" placeholder="" value={item.count} required />
+                  <input type="text" id="counter-input" data-input-counter className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white" placeholder="" value={itemcount} required />
                   
 
                   <button onClick={()=>handleIncButton(item.id)} type="button" id="increment-button" data-input-counter-increment="counter-input" className="inline-flex  shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">

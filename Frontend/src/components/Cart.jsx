@@ -5,75 +5,82 @@ import GlobalApi from '../Services/GlobalApi';
 import CardOfcart from './cartCompo/CardOfcart';
 
 const Cart = () => {
+  const [cartItem, setCartItem] = useState([]);
+  const [detailedcartItem, setdetailedCartItem] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [tax, setTax] = useState(0);
 
-    const [cartItem, setCartItem] = useState([]);
-    const [detailedcartItem, setdetailedCartItem] = useState([]);
-    const [total  ,setTotal] = useState(0)
-    const [discount  ,setdiscount] = useState(0)
-
-    const [tax  ,settax] = useState(0)
-
-
-    const fetchCart = async () => {
-      try {
-          const response = await axios.get("/api/getCart"); 
-          console.log("Cart Data Received:", response.data);
+  // Fetch Cart Items from API
+  const fetchCart = async () => {
+    try {
+      const response = await axios.get("/api/getCart");
+      console.log("Cart Data Received:", response.data);
   
-          if (Array.isArray(response.data)) {  
-              setCartItem(response.data);
-          } else {
-              console.error("Cart data is not an array:", response.data.cart);
-          }
-  
-      } catch (error) {
-          console.error("Error fetching cart:", error);
+      if (Array.isArray(response.data)) {  
+        setCartItem(response.data);  // Set the cart items
+      } else {
+        console.error("Cart data is not an array:", response.data.cart);
       }
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+    }
   };
 
-  useEffect(() => {
-    fetchCart();
+    useEffect(() => {
+      fetchCart();
+    }, []);
     
-}, []);
-console.log("Updated cart list:", cartItem);
-
-
   
-const getitemByid = async (id,item) => {
-  try {
-    console.log("Fetching details for ID:", id);
-    const resp = await GlobalApi.getItemByid(id);
-
-    console.log("Full API Response:", resp);  
-    console.log("Extracted Products:", resp?.data); // Safe access
-
-    if (!resp?.data) {
-      console.error("No products found for ID:", id);
-      return; // Prevent setting state with undefined data
+  // Fetch Item Details by ID
+  const getitemByid = async (id, count) => {
+    try {
+      console.log("Fetching details for ID:", id);
+      const resp = await GlobalApi.getItemByid(id);
+      
+      console.log("Full API Response:", resp);  
+      if (!resp?.data) {
+        console.error("No products found for ID:", id);
+        return null;
+      }
+  
+      return { ...resp.data, count };  // Return the item with count
+    } catch (err) {
+      console.error("Error fetching item details:", err);
+      return null;
     }
-    resp.data.count= item.count;
-    console.log("after ading count "+resp.data)
+  };
+  
+  // Fetch Details for All Cart Items
+  const fetchAllItems = async () => {
+    if (cartItem.length === 0) return;
+  
+    try {
+      const itemDetails = await Promise.all(
+        cartItem.map((item) => getitemByid(item.id, item.count))
+      );
+  
+      // Filter out null responses
+      const validItems = itemDetails.filter((item) => item !== null);
+  
+      setdetailedCartItem(validItems);  // Update state with fetched details
+    } catch (err) {
+      console.error("Error fetching cart details:", err);
+    }
+  };
+  
 
-    
-    setdetailedCartItem(prev => [...prev, resp.data]);  // Append new data
-  } catch (err) {
-    console.error("Error fetching item details:", err);
-  }
-};
-useEffect(() => {
-  if (cartItem.length > 0 && cartItem[0]?.id) {  // Ensure valid id
-    cartItem.forEach((item)=>
-      getitemByid(item.id, item)
-  ) ;
-} else {
-  console.error("Invalid cart item ID:", cartItem[0]);
-}
-console.log("check",detailedcartItem)
-}, [cartItem]);
-
+  // Fetch Item Details when cartItem changes
+  useEffect(() => {
+    fetchAllItems();
+  }, [cartItem]);
+  
+  console.log("Updated detailed list:", detailedcartItem);
+  console.log("Is detailedcartItem an array?", Array.isArray(detailedcartItem));
+  
 console.log("Updated deatiled list"+ Array.isArray(detailedcartItem))
 
 
-  
 
   function  gettotal(){
     let sum = 0;
@@ -103,6 +110,25 @@ function  gettgrandotal(){
 return res;
 }
 
+//to update price dynamicaly
+useEffect(() => {
+  const newTotal = gettotal();
+  setTotal(newTotal);
+  setDiscount(newTotal * 0.1); // 10% 
+  setTax(newTotal * 0.18); // 18% 
+
+  console.log("Cart Updated: ", detailedcartItem);
+}, [detailedcartItem]); //   whenever detailedcartItem it urns
+
+//function to handle child compo 
+const updateItemCount = (id, newCount) => {
+  setdetailedCartItem((prevItems) =>
+    prevItems.map((item) =>
+      item.id === id ? { ...item, count: newCount <= 0 ? 0 : newCount } : item
+)  );
+
+};
+
 
   return (
     <>
@@ -117,126 +143,17 @@ return res;
           {
             detailedcartItem.map((item , index)=>(
               
-              <CardOfcart key={index}item = {item}></CardOfcart>
+              <CardOfcart    updateItemCount={updateItemCount}  key={index}item = {item}></CardOfcart>
               
             
             ))
           }
           
           
-
-
-
-{/* 
-          
-          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
-            <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
-              <a href="#" className="shrink-0 md:order-1">
-                <img className="h-20 w-20 dark:hidden" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/apple-watch-light.svg" alt="imac image" />
-                <img className="hidden h-20 w-20 dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/apple-watch-dark.svg" alt="imac image" />
-              </a>
-
-              <label for="counter-input" className="sr-only">Choose quantity:</label>
-              <div className="flex items-center justify-between md:order-3 md:justify-end">
-                <div className="flex items-center">
-                <button type="button" id="increment-button" data-input-counter-increment="counter-input" className="inline-flex  shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
-                    <IoMdRemove />
-                  </button>
-
-
-                  <input type="text" id="counter-input-2" data-input-counter className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white" placeholder="" value="1" required />
-                  
-                  
-                  <button type="button" id="increment-button" data-input-counter-increment="counter-input" className="inline-flex  shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
-                    <IoMdAdd />
-                  </button>
-                </div>
-
-                <div className="text-end md:order-4 md:w-32">
-                  <p className="text-base font-bold text-gray-900 dark:text-white">$598</p>
-                </div>
-              </div>
-
-
-
-
-
-
-
-
-              <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
-                <a href="#" className="text-base font-medium text-gray-900 hover:underline dark:text-white">Restored Apple Watch Series 8 (GPS) 41mm Midnight Aluminum Case with Midnight Sport Band</a>
-
-                <div className="flex items-center gap-4">
-                  <button type="button" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-white">
-                    <svg className="me-1.5 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z" />
-                    </svg>
-                    Add to Favorites
-                  </button>
-
-                  <button type="button" className="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500">
-                    <svg className="me-1.5 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18 17.94 6M18 18 6.06 6" />
-                    </svg>
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
 
 
-          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
-            <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
-              <a href="#" className="shrink-0 md:order-1">
-                <img className="h-20 w-20 dark:hidden" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/macbook-pro-light.svg" alt="imac image" />
-                <img className="hidden h-20 w-20 dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/macbook-pro-dark.svg" alt="imac image" />
-              </a>
-
-              <label for="counter-input" className="sr-only">Choose quantity:</label>
-              <div className="flex items-center justify-between md:order-3 md:justify-end">
-                <div className="flex items-center">
-                  <button type="button" id="decrement-button-3" data-input-counter-decrement="counter-input-3" className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
-                    <svg className="h-2.5 w-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h16" />
-                    </svg>
-                  </button>
-                  <input type="text" id="counter-input-3" data-input-counter className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white" placeholder="" value="1" required />
-                  <button type="button" id="increment-button-3" data-input-counter-increment="counter-input-3" className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
-                    <svg className="h-2.5 w-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-                    </svg>
-                  </button>
-                </div>
-                <div className="text-end md:order-4 md:w-32">
-                  <p className="text-base font-bold text-gray-900 dark:text-white">$1,799</p>
-                </div>
-              </div>
-
-              <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
-                <a href="#" className="text-base font-medium text-gray-900 hover:underline dark:text-white">Apple - MacBook Pro 16" Laptop, M3 Pro chip, 36GB Memory, 18-core GPU, 512GB SSD, Space Black</a>
-
-                <div className="flex items-center gap-4">
-                  <button type="button" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-white">
-                    <svg className="me-1.5 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z" />
-                    </svg>
-                    Add to Favorites
-                  </button>
-
-                  <button type="button" className="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500">
-                    <svg className="me-1.5 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18 17.94 6M18 18 6.06 6" />
-                    </svg>
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
+{/*   
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
             <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
               <a href="#" className="shrink-0 md:order-1">
@@ -284,7 +201,7 @@ return res;
                 </div>
               </div>
             </div>
-          </div>
+          </div> 
 
 
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
@@ -334,9 +251,9 @@ return res;
                 </div>
               </div>
             </div>
-          </div> */}
+          </div> 
 
-        </div>
+        */}
         
         <div className="hidden xl:mt-8 xl:block">
           <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">People also bought</h3>
@@ -453,12 +370,12 @@ return res;
             <div className="space-y-2">
               <dl className="flex items-center justify-between gap-4">
                 <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Original price</dt>
-                <dd className="text-base font-medium text-gray-900 dark:text-white">${(gettotal().toFixed(2))}</dd>
+                <dd className="text-base font-medium text-gray-900 dark:text-white">${(total.toFixed(2))}</dd>
               </dl>
 
               <dl className="flex items-center justify-between gap-4">
                 <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Savings</dt>
-                <dd className="text-base font-medium text-green-600">-${(getdiscount().toFixed(2))}</dd>
+                <dd className="text-base font-medium text-green-600">-${(discount.toFixed(2))}</dd>
               </dl>
 
               <dl className="flex items-center justify-between gap-4">
@@ -468,7 +385,7 @@ return res;
 
               <dl className="flex items-center justify-between gap-4">
                 <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Tax</dt>
-                <dd className="text-base font-medium text-gray-900 dark:text-white">${(gettax().toFixed(2))}</dd>
+                <dd className="text-base font-medium text-gray-900 dark:text-white">${(tax.toFixed(2))}</dd>
               </dl>
             </div>
 
