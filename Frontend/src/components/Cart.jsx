@@ -26,7 +26,7 @@ const Cart = () => {
       console.error("Error fetching cart:", error);
     }
   };
-
+    
     useEffect(() => {
       fetchCart();
     }, []);
@@ -123,10 +123,12 @@ useEffect(() => {
 //function to handle child compo 
 const updateItemCount = (id, newCount) => {
   setdetailedCartItem((prevItems) =>
-    prevItems.map((item) =>
-      item.id === id ? { ...item, count: newCount <= 0 ? 0 : newCount } : item
-)  );
-
+    prevItems
+      .map((item) =>
+        item.id === id ? { ...item, count: newCount } : item
+      )  // Update the count
+      .filter((item) => item.count > 0) // Remove items with count 0
+  );
 };
 
 

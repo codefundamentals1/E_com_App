@@ -21,9 +21,10 @@ const [itemcount , setItemcount] = useState(item.count)
         console.log("removing item "+id)
         const response = await axios.post('/api/getcart/decrease', { getid: id });
         console.log("Item removed:", response.data);
-        { itemcount === 1?setItemcount(itemcount):        setItemcount(itemcount-1);
+        { itemcount === 1?(setItemcount(itemcount) ):setItemcount(itemcount-1);
         }
-        updateItemCount(item.id, item.count); // Update count in parent
+        
+        updateItemCount(item.id, itemcount); // Update count in parent
       } catch (error) {
         console.error("Error removing item:", error);
       }
