@@ -13,6 +13,10 @@ import Slider from './components/Slider.jsx'
 import Home from './components/Home.jsx'
 import Signin from './components/Signin.jsx'
 import Signup from './components/Signup.jsx'
+import Productpage from './components/Productcomp/Productpage.jsx'
+import ReviewPage from './components/Productcomp/ReviewPage.jsx'
+import ProdPagetemp from './components/Productcomp/ProdPagetemp.jsx'
+
 
 
 const router = createBrowserRouter(
@@ -22,6 +26,9 @@ const router = createBrowserRouter(
         <Route path='cart' element={< Cart />} />
         <Route path='auth/signin' element={<Signin/>}/>
         <Route path='auth/signup' element={<Signup/>}/>
+        <Route path='product/overview/:id' element={<ProdPagetemp />}/>
+
+
 
       {/* <Route path='' element={ <Citiescont/> }/> */}
       {/* <Route path='contact' element={<Contact />} />

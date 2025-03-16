@@ -7,7 +7,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import axios from 'axios'
-
+import {Link} from 'react-router-dom'
 function ItemCard({item}) {
   
   
@@ -35,6 +35,7 @@ function ItemCard({item}) {
         }}
       >
         {/* Product Image */}
+          <Link to={`/product/overview/${item.id}`}>
         <CardMedia
         
           component="img"
@@ -56,7 +57,7 @@ function ItemCard({item}) {
             ₹{item.price}
           </Typography>
         </CardContent>
-
+        </Link>
         {/* Actions */}
         <CardActions className="flex gap-5 hover:cursor-pointer">
           <Button variant="contained" color="primary" size="small " >

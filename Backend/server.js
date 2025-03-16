@@ -34,6 +34,12 @@ const handleAddtocart=(id)=>{
   
 
 }
+
+const handleAddtocartFromProduct=(id, getcount)=>{
+    cart.set(id,getcount);  
+  console.log(cart)
+  
+}
 const handleDelFromCart=(id)=>{
     
       cart.delete(id)
@@ -68,6 +74,18 @@ app.post('/api/add', (req, res)=>{
 
      res.send("Added sucess fuly")
  
+})
+
+app.post('/api/product/overview/add', (req, res)=>{
+  console.log("ok")
+  const { getid , getcount} = req.body;
+
+  console.log("Item ID received:", getid+" "+ getcount);
+  handleAddtocartFromProduct(getid, getcount)
+   console.log(getCartArray())
+
+   res.send("Added sucess fuly")
+
 })
 
 app.get('/api/getcart/' , (req, res)=>{
