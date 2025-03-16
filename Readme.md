@@ -37,64 +37,18 @@ npm install
 cd backend
 npm install
 ```
-
 ### **3. Start the Development Server**
-#### **Frontend**
-```sh
-npm run dev
-```
 #### **Backend**
 ```sh
 npm start
 ```
-
-## API Endpoints
-### **GET /api/getCart**
-Fetches the cart items stored in the backend.
-
-### **POST /api/add**
-Adds an item to the cart.
-#### **Request Body:**
-```json
-{
-  "getid": "123"
-}
+#### **Frontend**
+```sh
+npm run dev
 ```
 
-## Key Code Snippets
-### **Updating Item Quantity in State (Frontend)**
-```javascript
-const updateItemCount = (id, newCount) => {
-  setdetailedCartItem((prevItems) =>
-    prevItems
-      .map((item) =>
-        item.id === id ? { ...item, count: newCount } : item
-      )
-      .filter((item) => item.count > 0) // Remove if count = 0
-  );
-};
-```
-
-### **Handling Cart Data (Backend)**
-```javascript
-const cart = new Map();
-
-const handleAddToCart = (id) => {
-  cart.set(id, (cart.get(id) || 0) + 1);
-};
-
-const handleDelFromCart = (id) => {
-  if (cart.get(id) === 1) {
-    cart.delete(id);
-  } else {
-    cart.set(id, cart.get(id) - 1);
-  }
-};
-```
 
 ## Future Improvements
-- User authentication (login/register)
-- Persistent cart storage in a database
 - Payment gateway integration
 
 ## Author
