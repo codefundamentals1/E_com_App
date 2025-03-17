@@ -23,7 +23,7 @@ function ItemCard({item}) {
 
 
     return (
-    <section className="w-[300px] h-[400px] p-4 transition-all duration-200 ease-in-out transform hover:scale-105">
+      <section className="w-[300px] h-[400px] p-4 transition-all duration-200 ease-in-out transform hover:scale-105">
       <Card 
         sx={{ 
           minWidth:300,
@@ -34,7 +34,7 @@ function ItemCard({item}) {
           overflow: "hidden" 
         }}
       >
-        {/* Product Image */}
+        
           <Link to={`/product/overview/${item.id}`}>
         <CardMedia
         
@@ -45,7 +45,6 @@ function ItemCard({item}) {
           sx={{ height: 200, objectFit: "cover" }}
         />
 
-        {/* Product Info */}
         <CardContent>
           <Typography gutterBottom variant="h6" component="div" className="font-semibold">
             {item.title.length > 20 ? `${item.title.substring(0, 20)}...` : item.title}
@@ -69,6 +68,7 @@ function ItemCard({item}) {
         </CardActions>
       </Card>
     </section>
+  
   );
     
   

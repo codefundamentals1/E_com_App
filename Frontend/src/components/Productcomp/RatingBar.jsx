@@ -39,7 +39,7 @@ const RatingBar = ({ reviews }) => {
               <p className="font-medium text-lg text-black mr-0.5">{rating}</p>
               <StarTemplate />
               <p className="h-2 w-full xl:min-w-[278px] rounded-3xl bg-amber-50 ml-5 mr-3">
-                {/* Dynamically set width based on the percentage */}
+                {/* Dynamically width on %*/}
                 <span
                   className="h-full rounded-3xl bg-amber-400 flex"
                   style={{ width: `${percentage}%` }}

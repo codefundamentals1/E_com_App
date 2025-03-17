@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import logo from "../assets/Images/logo.png";
+import logo from '../assets/Images/logo.png'
 import { CiHeart, CiShoppingCart } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
 import propic from "../assets/Images/propic.png";

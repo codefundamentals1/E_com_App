@@ -155,7 +155,7 @@ const updateItemCount = (id, newCount) => {
           </div>
 
 
-{/*   
+{/*
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
             <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
               <a href="#" className="shrink-0 md:order-1">
@@ -256,6 +256,7 @@ const updateItemCount = (id, newCount) => {
           </div> 
 
         */}
+
         
         <div className="hidden xl:mt-8 xl:block">
           <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">People also bought</h3>
@@ -293,6 +294,7 @@ const updateItemCount = (id, newCount) => {
                 </button>
               </div>
             </div>
+            
             <div className="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
               <a href="#" className="overflow-hidden rounded">
                 <img className="mx-auto h-44 w-44 dark:hidden" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/ps5-light.svg" alt="imac image" />
