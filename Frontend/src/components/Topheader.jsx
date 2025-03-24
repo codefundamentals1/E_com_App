@@ -15,6 +15,7 @@ import {
 import HeaderItems from "./HeaderItems";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import ProductSearch from "./ProductSearch";
 const profileMenu = [
   // {
   //    name: "login/signup",
@@ -101,7 +102,7 @@ const Topheader = () => {
             <img
               src={logo}
               alt="not found"
-              className="w-[50px] md:w-[120px] object-cover"
+              className="w-[50px] h-[50px] md:w-[120px] object-cover"
             />
           </div>
         </Link>
@@ -146,6 +147,7 @@ const Topheader = () => {
             </button>
           </div>
         </form>
+        {/* <ProductSearch/> */}
         <div className="flex">
           <button className="mx-3">
             {" "}

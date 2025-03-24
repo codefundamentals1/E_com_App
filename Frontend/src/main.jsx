@@ -18,6 +18,7 @@ import ReviewPage from './components/Productcomp/ReviewPage.jsx'
 import ProdPagetemp from './components/Productcomp/ProdPagetemp.jsx'
 import Admin from './Admin/Admincompo/AdminLayoutFolder/Admin.jsx'
 import Adminmain from './Admin/Admincompo/AdminLayoutFolder/Adminmain.jsx'
+import ProductListingCard from './components/ProductListing/ProductListingCard.jsx'
 
 
 
@@ -31,6 +32,11 @@ const router = createBrowserRouter(
         <Route path='auth/signin' element={<Signin/>}/>
         <Route path='auth/signup' element={<Signup/>}/>
         <Route path='product/overview/:id' element={<ProdPagetemp />}/>
+        <Route path='listing' element={<ProductListingCard />}/>
+        <Route path='listing/:id' element={<ProductListingCard />}/>
+
+
+
 
    </Route>
 

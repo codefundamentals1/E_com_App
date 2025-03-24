@@ -7,25 +7,7 @@ import ItemCard from './ItemCard';
 function ItemList({category ,index_}) {
     const [itemList,setitemList]=useState([])
 console.log(category);
-    // const elementRef=useRef(null);
-    // useEffect(()=>{
-    //     getItemByGenreId();
-    // },[])
-
    
-
-    // const getItemByGenreId=()=>{
-    //     GlobalApi.getItemByGenreId(genreId).then(resp=>{
-    //         // console.log("movie list results ")
-    //             // console.log(resp.data.results)
-    //             setmovieList(resp.data.results)
-
-
-    //     }
-        
-    // )
-    // .catch(err => console.error(err));
-    // }
 
     const elementRef=useRef(null);
     useEffect(()=>{
@@ -63,8 +45,8 @@ console.log(category);
             hidden md:block absolute
             ${index_%3==0?'mt-[80px]':'mt-[150px]'} `}/>
    
-    <div ref={elementRef} className='flex overflow-x-auto gap-8
-     scrollbar-none scroll-smooth pt-4 px-3 '>
+    <div ref={elementRef} className="scroll-my-0 flex overflow-x-auto overflow-y-hidden gap-8 
+             scrollbar-none scroll-smooth pt-4 px-3">
      {itemList.map((item,index)=>(
            <>
           {<ItemCard item={item} />}

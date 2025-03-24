@@ -4,7 +4,6 @@ import GlobalApi from "../Services/GlobalApi";
 const screenwidth = window.innerWidth;
 import carousel from '../assets/Images/carousel.jpg'
 const Slider = () => {
-    // const [moviesList , setItemslist] = useState([]);
     const elementref = useRef();
  
 
@@ -26,7 +25,7 @@ const Slider = () => {
     <div className="flex overflow-x-auto w-full px-16 py-4 scrollbar-none scroll-smooth" ref={elementref}>
     {[1,2,3,4,5].map((item, index)=>(
         <img key={index} src={carousel} alt="" 
-        className='min-w-full md:h-[350px] object-cover object-left-top mr-5 rounded-lg hover:border-[4px] transition-all duration-150 ease-in border-gray-300 ' />
+        className='min-w-full md:h-[230px] object-cover object-left-top mr-5 rounded-lg hover:border-[4px] transition-all duration-150 ease-in border-gray-300 ' />
 
     ))}
     </div>
