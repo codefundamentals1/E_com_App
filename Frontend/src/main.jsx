@@ -16,11 +16,15 @@ import Signup from './components/Signup.jsx'
 import Productpage from './components/Productcomp/Productpage.jsx'
 import ReviewPage from './components/Productcomp/ReviewPage.jsx'
 import ProdPagetemp from './components/Productcomp/ProdPagetemp.jsx'
+import Admin from './Admin/Admincompo/AdminLayoutFolder/Admin.jsx'
+import Adminmain from './Admin/Admincompo/AdminLayoutFolder/Adminmain.jsx'
 
 
 
 const router = createBrowserRouter(
   createRoutesFromElements(
+    <>
+    
   <Route path='/' element={< Layout/>}>
         <Route path ='' element={<Home/>}/>
         <Route path='cart' element={< Cart />} />
@@ -28,25 +32,21 @@ const router = createBrowserRouter(
         <Route path='auth/signup' element={<Signup/>}/>
         <Route path='product/overview/:id' element={<ProdPagetemp />}/>
 
-
-
-      {/* <Route path='' element={ <Citiescont/> }/> */}
-      {/* <Route path='contact' element={<Contact />} />
-      <Route path='about' element={<About />} />
-      <Route path='contact' element={<Contact />} /> */}
-      {/* <Route path='login' element={<Login />} />
-      <Route path='sidebar' element={<Sidebar />} />
-      <Route path='main' element={<Newtrip />} />
-      <Route path='main/details' element={<Mainpage />} /> */}
-
-
    </Route>
+
+
+{/* //Routes for admin */}
+<Route path='admin/*' element={<Admin/>}>
+<Route index element={<Adminmain />} />
+ </Route>
+ </>
 
 
 
   )
 
 )
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
