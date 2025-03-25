@@ -2,17 +2,43 @@ import React, { useState } from 'react'
 import * as Icons from 'react-icons/tb';
 // import { useDispatch } from 'react-redux';
 import Logo from '../../images/common/logo.svg';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import navigation from '../../api/navigation.jsx'
+import axios from 'axios';
 // import {logout} from '../../store/slices/authenticationSlice.jsx';
 
 
 
 const AdminSidebar = () => {
     // const dispatch = useDispatch();
-
+const navigate = useNavigate();
+const [triggerRerender, setTriggerRerender] = useState(0); // 🔥 Force re-render
     const [toggle, setToggle] = useState(null);
     const [sidebar, setSidebar] = useState(false);
+
+    const handleLogout = async () => {
+      try {
+        console.log("Logging out...");
+    
+        // Send GET request to logout API
+        const response = await axios.get("/api/admin/auth/logout", { withCredentials: true });
+    
+        // Handle successful logout
+        if (response.status === 200) {
+          console.log(response.data.message); // 'Logged out successfully'
+    
+          // Remove session cookie from the client (optional, as server already clears it)
+          Cookies.remove("connect.sid");
+    
+          // Update state to reflect that the user is logged out
+          setIsUserSignedIn(false);
+          navigate('/admin')
+        }
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    };
+
     const handleManu = (key) => {
       setToggle((prevToggle) => (prevToggle === key ? null : key));
     };
@@ -86,7 +112,7 @@ const AdminSidebar = () => {
             })}
             <div
               className={`menu_link`}
-              onClick={handleIsLogout}
+              onClick={handleLogout}
             >
               <Icons.TbLogout className="menu_icon" />
               <span>Logout</span>

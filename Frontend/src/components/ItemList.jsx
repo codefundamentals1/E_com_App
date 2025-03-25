@@ -7,6 +7,7 @@ import ItemCard from './ItemCard';
 function ItemList({category ,index_}) {
     const [itemList,setitemList]=useState([])
 console.log(category);
+
    
 
     const elementRef=useRef(null);

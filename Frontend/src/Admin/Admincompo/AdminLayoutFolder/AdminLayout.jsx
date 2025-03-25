@@ -5,17 +5,35 @@ import AdminFooter from './AdminFooter';
 import AdminLogin from './AdminLogin';
 import AdminSignup from './AdminSignup';
 import React, { useEffect, useState } from "react";
-// import { useSelector } from 'react-redux';
+import axios from 'axios';
 import { Routes, Route, useNavigate } from "react-router-dom";
-// import '../../styles/style.min.css'
 const AdminLayout = () => {
-  const isAuthenticated = true
+  const Navigate = useNavigate();
+  const [triggerRerender, setTriggerRerender] = useState(0); // 🔥 Force re-render
+  const [isAuthenticated , setisAuthenticated] = useState(false)
+ 
+useEffect(() => {
+  axios.get('/api/admin/auth/check', { withCredentials: true })
+    .then(response => {
+      if (response.data.loggedIn) {
+        setisAuthenticated(true);
+        setTriggerRerender(prev => prev + 1); // 🔥 Change state to trigger re-render
+      } else {
+        setIsAuthenticated(false);
+      }
+    })
+    .catch(error => {
+      console.error('Error checking user session', error);
+      setisAuthenticated(false);
+    });
+}, []); // ✅ Only run
 
   return (
     <>
+      <div key={isAuthenticated ? "loggedIn" : "loggedOut"}>
      {!isAuthenticated ? (
         <Routes>
-          <Route path="/login" element={<AdminLogin />} />
+          <Route path="/" element={<AdminLogin />} />
           <Route path="/signup" element={<AdminSignup />} />
         </Routes>
       ) : (
@@ -33,7 +51,7 @@ const AdminLayout = () => {
       )}
     
 
-    
+    </div>
     
     </>
   )

@@ -10,11 +10,13 @@ import axios from 'axios'
 import {Link,useNavigate} from 'react-router-dom'
 function ItemCard({item}) {
   const Navigate = useNavigate();
+  const [loading , setLoading] = React.useState(true)
   
   const handleAddtoCart = async (id) => {
     try {
       const response = await axios.post('/api/add/', { getid: id });
       console.log("Item added:", response.data);
+      
     } catch (error) {
       console.error("Error adding item:", error);
     }
@@ -72,7 +74,7 @@ function ItemCard({item}) {
     //     </CardActions>
     //   </Card>
     // </section>
-    <Link to={`/product/overview/${item.id}`}>
+    <a href={`/product/overview/${item.id}`}>
     <div className="bg-gray-900 text-white rounded-xl shadow-lg shadow-gray-500/50 transition-transform transform hover:scale-105 hover:shadow-gray-300/50 cursor-pointer p-4 min-w-80">
       {/* Product Image */}
       <div className="bg-gray-300 p-4 rounded-lg flex justify-center">
@@ -96,7 +98,7 @@ function ItemCard({item}) {
         </div>
       </div>
     </div>
-    </Link>
+    </a>
   
   );
     

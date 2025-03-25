@@ -22,6 +22,8 @@ app.use(
 );
 
 app.use('/api/auth', require('./Routes/Auth.route'));
+app.use('/api/admin/auth', require('./Routes/AdminAuth.route'));
+
 
 const handleAddtocart=(id)=>{
   if(cart.has(id)){

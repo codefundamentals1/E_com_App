@@ -8,7 +8,8 @@ import LifestyleCategories from './LifestyleCategories'
 
 const Home = () => {
   return (
-<><Slider></Slider>
+<>
+<Slider></Slider>
 <LifestyleCategories/>
 
 <Landingpage2></Landingpage2>

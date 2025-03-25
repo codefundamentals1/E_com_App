@@ -27,12 +27,11 @@ const Navigate = useNavigate();
 
         if (!resp?.data) {
           console.error("No products found for ID:", id);
-          setLoading(false);
-          return null; // or return early
+          return null; // return early
         }
 
         setItemdetails(resp.data);
-        console.log("items details", resp.data); // Logging the actual response data
+        console.log("items details", resp.data); //  response data
         setLoading(false);
       })
       .catch((err) => {
@@ -52,7 +51,7 @@ const Navigate = useNavigate();
   }, [itemdetails]);
 
   if (loading) {
-    return <div><Banner/></div>; // Show loading indicator while fetching data
+    return <div><Banner/></div>; // loading Banner 
   }
 
   const handleAddtoCart = async (id) => {
@@ -90,7 +89,6 @@ const Navigate = useNavigate();
             <div className="img">
               <div className="img-box h-full max-lg:mx-auto ">
                 <img
-                  // onClick={console.log("hi hi", itemdetails)}
                   src={itemdetails.images[0]}
                   alt={itemdetails.title}
                   className="max-lg:mx-auto lg:ml-auto h-full object-cover"
