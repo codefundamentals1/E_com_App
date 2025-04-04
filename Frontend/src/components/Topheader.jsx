@@ -71,7 +71,8 @@ const Topheader = () => {
         // Update state to reflect that the user is logged out
         setIsUserSignedIn(false);
       }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Logout failed:", error);
     }
   };

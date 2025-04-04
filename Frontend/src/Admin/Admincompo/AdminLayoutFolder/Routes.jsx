@@ -62,6 +62,7 @@ import ManagePages from "../../pages/pages/ManagePages";
 import ManageTransactions from "../../pages/payment/ManageTransactions";
 import PaymentMethod from "../../pages/payment/PaymentMethod";
 import TransactionDetail from "../../pages/payment/TransactionDetail";
+import AdminLogin from '../AdminLayoutFolder/AdminLogin.jsx'
 
 // Sorting and Comments
 
@@ -70,6 +71,8 @@ const routes = [
     path: "/",
     element: <Dashboard />,
   },
+
+ 
 
   // Catalog
   {

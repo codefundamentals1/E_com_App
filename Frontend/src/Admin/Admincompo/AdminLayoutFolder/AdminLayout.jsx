@@ -13,13 +13,13 @@ const AdminLayout = () => {
   const [isAuthenticated , setisAuthenticated] = useState(false)
  
 useEffect(() => {
-  axios.get('/api/admin/auth/check', { withCredentials: true })
+  axios.get('/hi/users/check', { withCredentials: true })
     .then(response => {
       if (response.data.loggedIn) {
         setisAuthenticated(true);
         setTriggerRerender(prev => prev + 1); // 🔥 Change state to trigger re-render
       } else {
-        setIsAuthenticated(false);
+        setisAuthenticated(false);
       }
     })
     .catch(error => {
@@ -30,30 +30,21 @@ useEffect(() => {
 
   return (
     <>
-      <div key={isAuthenticated ? "loggedIn" : "loggedOut"}>
-     {!isAuthenticated ? (
-        <Routes>
-          <Route path="/" element={<AdminLogin />} />
-          <Route path="/signup" element={<AdminSignup />} />
-        </Routes>
-      ) : (
-        <>           
+             
         
         <div className="flex min-h-screen">
           <AdminSidebar />
           <div className="flex flex-col flex-1overflow-y-auto">
           <AdminNavbar />
-            <Adminmain /> 
+            <Adminmain  /> 
             <AdminFooter />
           </div>
           </div>
         </>
-      )}
+      
     
 
-    </div>
     
-    </>
   )
 }
 

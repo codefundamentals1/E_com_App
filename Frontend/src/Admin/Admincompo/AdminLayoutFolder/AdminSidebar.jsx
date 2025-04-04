@@ -18,24 +18,42 @@ const [triggerRerender, setTriggerRerender] = useState(0); // 🔥 Force re-rend
 
     const handleLogout = async () => {
       try {
-        console.log("Logging out...");
-    
-        // Send GET request to logout API
-        const response = await axios.get("/api/admin/auth/logout", { withCredentials: true });
+        console.log("Initiating logout...");
+        // Send POST request to logout endpoint (POST is more appropriate for logout)
+        const response = await axios.post('/hi/users/logout', {}, {
+          withCredentials: true
+        });
     
         // Handle successful logout
         if (response.status === 200) {
-          console.log(response.data.message); // 'Logged out successfully'
-    
-          // Remove session cookie from the client (optional, as server already clears it)
-          Cookies.remove("connect.sid");
-    
-          // Update state to reflect that the user is logged out
+          console.log('Logout successful:', response.data.message);
+          
+          // Update application state
           setIsUserSignedIn(false);
-          navigate('/admin')
+          
+          // Redirect to login page with a small delay for better UX
+          setTimeout(() => navigate('/admin'), 500);
+          
+          // Optional: Force refresh to ensure all state is cleared
+          window.location.reload();
         }
       } catch (error) {
-        console.error("Logout failed:", error);
+        console.error('Logout failed:', error);
+        
+        // Handle specific error cases
+        if (error.response) {
+          if (error.response.status === 401) {
+            console.log('No active session to logout from');
+            // Still clear client-side data
+         
+            setIsUserSignedIn(false);
+            navigate('/admin');
+          } else {
+            console.error('Server error during logout:', error.response.data);
+          }
+        } else {
+          console.error('Network error during logout:', error.message);
+        }
       }
     };
 

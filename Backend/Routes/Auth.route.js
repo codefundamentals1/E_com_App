@@ -67,9 +67,11 @@ router.get('/profile', async function (req, res, next) {
 
 // GET for logout
 router.get('/logout', function (req, res, next) {
+  
   if (req.session) {
     req.session.destroy(function (err) {
       if (err) {
+        console.log("sees not found")
         return next(err);
       } else {
         // Clear the session cookie from the client

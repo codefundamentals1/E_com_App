@@ -24,6 +24,7 @@ import ProdPagetemp from "./components/Productcomp/ProdPagetemp.jsx";
 import Admin from "./Admin/Admincompo/AdminLayoutFolder/Admin.jsx";
 import Adminmain from "./Admin/Admincompo/AdminLayoutFolder/Adminmain.jsx";
 import ProductListingCard from "./components/ProductListing/ProductListingCard.jsx";
+import AdminLogin from "./Admin/Admincompo/AdminLayoutFolder/AdminLogin.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
