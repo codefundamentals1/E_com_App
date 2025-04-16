@@ -1,3 +1,6 @@
+//dummy oblect for just rendering the objects
+
+
 import React from 'react'
 import GenresList from '../Constants/GenresList'
 import ItemList from './ItemList'

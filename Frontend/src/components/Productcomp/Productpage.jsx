@@ -18,33 +18,34 @@ const Navigate = useNavigate();
 
   console.log("Extracted id:", id);
 
-  const getitemByid = (id) => {
+
+ 
+  const getitemByid = async (id) => {
     console.log("Fetching details for ID:", id);
 
-    GlobalApi.getItemByid(id) // Call the API which returns a promise
-      .then((resp) => {
-        console.log("Full API Response:", resp);
+    try {
+      const resp = await axios.get(`/hi/products/${id}`);
+      console.log("Full API Response:", resp);
 
-        if (!resp?.data) {
-          console.error("No products found for ID:", id);
-          return null; // return early
-        }
-
-        setItemdetails(resp.data);
-        console.log("items details", resp.data); //  response data
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching item details:", err);
-        setLoading(false);
-        return null;
-      });
+      if (!resp?.data) {
+        console.error("No products found for ID:", id);
+        return;
+      }
+      setItemdetails(resp.data);
+      console.log("Item details:", resp.data);
+    } catch (error) {
+      console.error("Error fetching product:", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getitemByid(id);
-  }, []);
-  console.log("Updated deatiled list" + Array.isArray(itemdetails));
+  }, [id]);
+
+  // console.log("Updated deatiled list" + Array.isArray(itemdetails));
+  
 
   useEffect(() => {
     console.log("Updated item details:", itemdetails);
@@ -56,7 +57,9 @@ const Navigate = useNavigate();
 
   const handleAddtoCart = async (id) => {
     try {
-      const response = await axios.post('/api/add/', { getid: id });
+      console.log("Item added:");
+
+      const response = await axios.post('/hi/carts/items',{ productId: id ,quantity: count}, { withCredentials: true });
       console.log("Item added:", response.data);
     } catch (error) {
       console.error("Error adding item:", error);
@@ -64,7 +67,7 @@ const Navigate = useNavigate();
   };
   const handleBuyNow= async (id) =>{
     try {
-      const response = await axios.post('/api/product/overview/add', { getid: id ,getcount: count});
+      const response = await axios.post('/api/product/overview/add', { productId: id ,quantity: count});
       console.log("Item added:", response.data);
     } catch (error) {
       console.error("Error adding item:", error);
@@ -78,7 +81,7 @@ const Navigate = useNavigate();
 
 
 
-
+  
   return (
     <>
    
@@ -89,9 +92,9 @@ const Navigate = useNavigate();
             <div className="img">
               <div className="img-box h-full max-lg:mx-auto ">
                 <img
-                  src={itemdetails.images[0]}
+                  src={itemdetails.image_url}
                   alt={itemdetails.title}
-                  className="max-lg:mx-auto lg:ml-auto h-full object-cover"
+                  className="max-lg:mx-auto  max-h-[400px] max-w-[600px] lg:ml-auto h-full object-cover"
                 />
               </div>
             </div>
@@ -105,20 +108,19 @@ const Navigate = useNavigate();
                 </h2>
                 <div className="flex flex-col sm:flex-row sm:items-center mb-6">
                   <h6 className="font-manrope font-semibold text-2xl leading-9 text-gray-900 pr-5 sm:border-r border-gray-200 mr-5">
-                    ${itemdetails.price}
+                    ${itemdetails.final_price}
                   </h6>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1">
-                     <RatingStars rating = {itemdetails.rating}/>
+                     {/* <RatingStars rating = {itemdetails.rating}/> */}
                     </div>
                     <span className="pl-2 font-normal leading-7 text-gray-500 text-sm ">
-                      {itemdetails.reviews.length}
                     </span>
                   </div>
                 </div>
                 <p className="text-gray-500 text-base font-normal mb-5">
-                  {itemdetails.description}
-                  {/* <a href="#" className="text-indigo-600">
+                {itemdetails.description.substring(0, 150)}...
+                                  {/* <a href="#" className="text-indigo-600">
                     More....
                   </a> */}
                 </p>
@@ -126,54 +128,30 @@ const Navigate = useNavigate();
                   <li className="flex items-center gap-3">
                   <TickMark/>
                     <span className="font-normal text-base text-gray-900 ">
-                      {itemdetails.shippingInformation}
+                      {itemdetails.availability}
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                    <TickMark/>
                     <span className="font-normal text-base text-gray-900 ">
-                      {itemdetails.returnPolicy}
+                      {itemdetails.brand}
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                    <TickMark/>
                     <span className="font-normal text-base text-gray-900 ">
-                      {itemdetails.warrantyInformation}
+                      {itemdetails.rating} stars {itemdetails.reviews_count} reviews
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                    <TickMark/>
                     <span className="font-normal text-base text-gray-900 ">
-                      {itemdetails.availabilityStatus} : {itemdetails.stock}
+                      {itemdetails.bought_past_month}  bought past month 
                     </span>
                   </li>
                 </ul>
 
-                {/* Selecting variants */}
-
-                
-                {/* <p className="text-gray-900 text-lg leading-8 font-medium mb-4">
-                  Variant:
-                </p> */}
-                {/* <div className="w-full pb-8 border-b border-gray-100 flex-wrap">
-                  <div className="grid grid-cols-3 min-[400px]:grid-cols-5 gap-3 max-w-md">
-                    <button className="bg-white text-center py-1.5 px-6 w-full font-semibold text-lg leading-8 text-gray-900 border border-gray-200 flex items-center rounded-full justify-center transition-all duration-300 hover:bg-gray-50 hover:shadow-sm hover:shadow-gray-100 hover:border-gray-300 visited:border-gray-300 visited:bg-gray-50">
-                      S
-                    </button>
-                    <button className="bg-white text-center py-1.5 px-6 w-full font-semibold text-lg leading-8 text-gray-900 border border-gray-200 flex items-center rounded-full justify-center transition-all duration-300 hover:bg-gray-50 hover:shadow-sm hover:shadow-gray-100 hover:border-gray-300 visited:border-gray-300 visited:bg-gray-50">
-                      M
-                    </button>
-                    <button className="bg-white text-center py-1.5 px-6 w-full font-semibold text-lg leading-8 text-gray-900 border border-gray-200 flex items-center rounded-full justify-center transition-all duration-300 hover:bg-gray-50 hover:shadow-sm hover:shadow-gray-100 hover:border-gray-300 visited:border-gray-300 visited:bg-gray-50">
-                      L
-                    </button>
-                    <button className="bg-white text-center py-1.5 px-6 w-full font-semibold text-lg leading-8 text-gray-900 border border-gray-200 flex items-center rounded-full justify-center transition-all duration-300 hover:bg-gray-50 hover:shadow-sm hover:shadow-gray-100 hover:border-gray-300 visited:border-gray-300 visited:bg-gray-50">
-                      XL
-                    </button>
-                    <button className="bg-white text-center py-1.5 px-6 w-full font-semibold text-lg leading-8 text-gray-900 border border-gray-200 flex items-center rounded-full justify-center transition-all duration-300 hover:bg-gray-50 hover:shadow-sm hover:shadow-gray-100 hover:border-gray-300 visited:border-gray-300 visited:bg-gray-50">
-                      XXL
-                    </button>
-                  </div>
-                </div> */}
+              
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 py-8">
                   <div className="flex sm:items-center sm:justify-center w-full">
@@ -301,7 +279,7 @@ const Navigate = useNavigate();
               Our customer reviews
             </h2>
           
-            <RatingBar reviews={itemdetails.reviews} />
+            {/* <RatingBar reviews={itemdetails.reviews} /> */}
             
             <div class="p-8 bg-amber-50 rounded-3xl flex items-center justify-center flex-col">
               <h2 class="font-manrope font-bold text-5xl text-amber-400 mb-6">
@@ -313,7 +291,8 @@ const Navigate = useNavigate();
               </div>
 
               <p class="font-medium text-xl leading-8 text-gray-900 text-center">
-                {itemdetails.reviews.length} Reviews
+                {/* {itemdetails.reviews.length} */}
+                 Reviews
               </p>
             </div>
 
@@ -321,7 +300,7 @@ const Navigate = useNavigate();
 
             {/* ////////////////////////////// rendering reviws  */}
             {/* <p>{itemdetails.reviews[0].comment}</p> */}
-            {itemdetails.reviews.map((item, index) => (
+            {/* {itemdetails.reviews.map((item, index) => (
               <>
                 <div
                   key={index}
@@ -330,9 +309,7 @@ const Navigate = useNavigate();
                   <div class="flex items-center gap-3 mb-4">
                     <RatingStars rating={item.rating}></RatingStars>
                   </div>
-                  {/* <h3 class="font-manrope font-semibold text-xl sm:text-2xl leading-9 text-black mb-6">
-                    review head
-                  </h3> */}
+                 
                   <div class="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-4">
                     <div class="flex items-center gap-3">
                       <img
@@ -353,81 +330,40 @@ const Navigate = useNavigate();
                   </p>
                 </div>
               </>
-            ))}
-            {/* <div class="pt-8 max-xl:max-w-2xl max-xl:mx-auto">
-                <div class="flex items-center gap-3 mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-                        <g clip-path="url(#clip0_13624_2892)">
-                            <path
-                                d="M14.1033 2.56698C14.4701 1.82374 15.5299 1.82374 15.8967 2.56699L19.1757 9.21093C19.3214 9.50607 19.6029 9.71064 19.9287 9.75797L27.2607 10.8234C28.0809 10.9426 28.4084 11.9505 27.8149 12.5291L22.5094 17.7007C22.2737 17.9304 22.1662 18.2614 22.2218 18.5858L23.4743 25.8882C23.6144 26.7051 22.7569 27.3281 22.0233 26.9424L15.4653 23.4946C15.174 23.3415 14.826 23.3415 14.5347 23.4946L7.9767 26.9424C7.24307 27.3281 6.38563 26.7051 6.52574 25.8882L7.7782 18.5858C7.83384 18.2614 7.72629 17.9304 7.49061 17.7007L2.1851 12.5291C1.59159 11.9505 1.91909 10.9426 2.73931 10.8234L10.0713 9.75797C10.3971 9.71064 10.6786 9.50607 10.8243 9.21093L14.1033 2.56698Z"
-                                fill="#FBBF24" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_13624_2892">
-                                <rect width="30" height="30" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-                        <g clip-path="url(#clip0_13624_2892)">
-                            <path
-                                d="M14.1033 2.56698C14.4701 1.82374 15.5299 1.82374 15.8967 2.56699L19.1757 9.21093C19.3214 9.50607 19.6029 9.71064 19.9287 9.75797L27.2607 10.8234C28.0809 10.9426 28.4084 11.9505 27.8149 12.5291L22.5094 17.7007C22.2737 17.9304 22.1662 18.2614 22.2218 18.5858L23.4743 25.8882C23.6144 26.7051 22.7569 27.3281 22.0233 26.9424L15.4653 23.4946C15.174 23.3415 14.826 23.3415 14.5347 23.4946L7.9767 26.9424C7.24307 27.3281 6.38563 26.7051 6.52574 25.8882L7.7782 18.5858C7.83384 18.2614 7.72629 17.9304 7.49061 17.7007L2.1851 12.5291C1.59159 11.9505 1.91909 10.9426 2.73931 10.8234L10.0713 9.75797C10.3971 9.71064 10.6786 9.50607 10.8243 9.21093L14.1033 2.56698Z"
-                                fill="#FBBF24" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_13624_2892">
-                                <rect width="30" height="30" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-                        <g clip-path="url(#clip0_13624_2892)">
-                            <path
-                                d="M14.1033 2.56698C14.4701 1.82374 15.5299 1.82374 15.8967 2.56699L19.1757 9.21093C19.3214 9.50607 19.6029 9.71064 19.9287 9.75797L27.2607 10.8234C28.0809 10.9426 28.4084 11.9505 27.8149 12.5291L22.5094 17.7007C22.2737 17.9304 22.1662 18.2614 22.2218 18.5858L23.4743 25.8882C23.6144 26.7051 22.7569 27.3281 22.0233 26.9424L15.4653 23.4946C15.174 23.3415 14.826 23.3415 14.5347 23.4946L7.9767 26.9424C7.24307 27.3281 6.38563 26.7051 6.52574 25.8882L7.7782 18.5858C7.83384 18.2614 7.72629 17.9304 7.49061 17.7007L2.1851 12.5291C1.59159 11.9505 1.91909 10.9426 2.73931 10.8234L10.0713 9.75797C10.3971 9.71064 10.6786 9.50607 10.8243 9.21093L14.1033 2.56698Z"
-                                fill="#FBBF24" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_13624_2892">
-                                <rect width="30" height="30" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-                        <g clip-path="url(#clip0_13624_2892)">
-                            <path
-                                d="M14.1033 2.56698C14.4701 1.82374 15.5299 1.82374 15.8967 2.56699L19.1757 9.21093C19.3214 9.50607 19.6029 9.71064 19.9287 9.75797L27.2607 10.8234C28.0809 10.9426 28.4084 11.9505 27.8149 12.5291L22.5094 17.7007C22.2737 17.9304 22.1662 18.2614 22.2218 18.5858L23.4743 25.8882C23.6144 26.7051 22.7569 27.3281 22.0233 26.9424L15.4653 23.4946C15.174 23.3415 14.826 23.3415 14.5347 23.4946L7.9767 26.9424C7.24307 27.3281 6.38563 26.7051 6.52574 25.8882L7.7782 18.5858C7.83384 18.2614 7.72629 17.9304 7.49061 17.7007L2.1851 12.5291C1.59159 11.9505 1.91909 10.9426 2.73931 10.8234L10.0713 9.75797C10.3971 9.71064 10.6786 9.50607 10.8243 9.21093L14.1033 2.56698Z"
-                                fill="#FBBF24" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_13624_2892">
-                                <rect width="30" height="30" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-                        <g clip-path="url(#clip0_13624_2892)">
-                            <path
-                                d="M14.1033 2.56698C14.4701 1.82374 15.5299 1.82374 15.8967 2.56699L19.1757 9.21093C19.3214 9.50607 19.6029 9.71064 19.9287 9.75797L27.2607 10.8234C28.0809 10.9426 28.4084 11.9505 27.8149 12.5291L22.5094 17.7007C22.2737 17.9304 22.1662 18.2614 22.2218 18.5858L23.4743 25.8882C23.6144 26.7051 22.7569 27.3281 22.0233 26.9424L15.4653 23.4946C15.174 23.3415 14.826 23.3415 14.5347 23.4946L7.9767 26.9424C7.24307 27.3281 6.38563 26.7051 6.52574 25.8882L7.7782 18.5858C7.83384 18.2614 7.72629 17.9304 7.49061 17.7007L2.1851 12.5291C1.59159 11.9505 1.91909 10.9426 2.73931 10.8234L10.0713 9.75797C10.3971 9.71064 10.6786 9.50607 10.8243 9.21093L14.1033 2.56698Z"
-                                fill="#FBBF24" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_13624_2892">
-                                <rect width="30" height="30" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                </div>
-                <h3 class="font-manrope font-semibold text-xl sm:text-2xl leading-9 text-black mb-6">Pagedone's design system seamlessly bridges the gap between designers and developers!
-                </h3>
-                <div class="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-4">
+            ))} */}
+           
+
+            
+              <>
+                <div
+                  
+                  class="pt-11 pb-8 border-b border-gray-100 max-xl:max-w-2xl max-xl:mx-auto"
+                  
+                >
+                                   <h1  className="text-black mb-4">Top review</h1>
+
+                  <div class="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-4">
+                    
                     <div class="flex items-center gap-3">
-                        <img src="https://pagedone.io/asset/uploads/1704351103.png" alt="Robert image" class="w-8 h-8 rounded-full object-cover"/>
-                        <h6 class="font-semibold text-lg leading-8 text-indigo-600">Robert Karmazov</h6>
+                      <img
+                        src="https://pagedone.io/asset/uploads/1704349572.png"
+                        alt="John image"
+                        class="w-8 h-8 rounded-full object-cover"
+                      />
+                      <h6 class="font-semibold text-lg leading-8 text-indigo-600 ">
+                        john
+                      </h6>
                     </div>
-                    <p class="font-normal text-lg leading-8 text-gray-400">Nov 01, 2023</p>
+                    <p class="font-normal text-lg leading-8 text-gray-400">
+                      {itemdetails.date}
+                    </p>
+                  </div>
+                  <p class="font-normal text-lg leading-8 text-gray-400 max-xl:text-justify">
+                    {itemdetails.top_review}
+                  </p>
                 </div>
-                <p class="font-normal text-lg leading-8 text-gray-400 max-xl:text-justify">Pagedone doesn't disappoint when it comes to the variety and richness of its design components. From pre-built templates to customizable elements, the system caters to both beginners and seasoned designers. The extensive library ensures a diverse range of options to bring creative visions to life.</p>
-            </div>   */}
+              </>
+            
           </div>
         </div>
       </section>

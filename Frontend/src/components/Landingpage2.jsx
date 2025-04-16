@@ -4,21 +4,22 @@ import camera from '../assets/Images/camera.png'
 import smartwatch from '../assets/Images/smartwatch.png'
 import headphone from '../assets/Images/headphone.png'
 const Landingpage2 = () => {
-
+//genre list
   const electronics = [
     { id: 1, name: "Headphones", image: smartwatch },
     { id: 2, name: "Smartwatches", image: headphone },
     { id: 3, name: "Laptops", image: laptop },
     { id: 4, name: "Cameras", image: camera },
   ];
-
-  console.log("Electronics list:", electronics);
+//check it in testing phase
+  // console.log("Electronics list:", electronics);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 ">
       <div>
         <h2 className="text-xl font-bold mb-4">Electronics Deals</h2>
         <div className="grid grid-cols-2 gap-4">
+          {/* //mapping */}
           {electronics.map((item) => (
              <div key={item.id} className="text-center bg-gray-900 p-4 rounded-lg shadow-lg shadow-gray-500/50 transition-transform transform hover:scale-105 hover:shadow-gray-300/50 cursor-pointer">
              <img src={item.image} alt={item.name} className="w-24 h-24 mx-auto mb-2" />

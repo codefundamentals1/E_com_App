@@ -35,6 +35,7 @@ const [triggerRerender, setTriggerRerender] = useState(0); // 🔥 Force re-rend
           setTimeout(() => navigate('/admin'), 500);
           
           // Optional: Force refresh to ensure all state is cleared
+          navigate('/admin',{replace:true})
           window.location.reload();
         }
       } catch (error) {
@@ -54,6 +55,10 @@ const [triggerRerender, setTriggerRerender] = useState(0); // 🔥 Force re-rend
         } else {
           console.error('Network error during logout:', error.message);
         }
+      }
+      finally{
+        window.location.reload();
+
       }
     };
 

@@ -17,7 +17,7 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      const response = await axios.post('/hi/users/login', {
+      const response = await axios.post('/hi/seller/login', {
         email: email,
         password: password,
       }, {
@@ -26,8 +26,9 @@ const AdminLogin = () => {
 
       console.log('Signin Response:', response);
       
-      if (response.data.token) {
-        navigate('/admin');
+      if (response.data) {
+        // navigate('/admin',{ replace: true });
+        window.location.reload()
         console.log("Signed in successfully");
       } else {
         setError('Login failed');
@@ -55,7 +56,7 @@ const AdminLogin = () => {
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Email
                 </label>
                 <input
@@ -71,7 +72,7 @@ const AdminLogin = () => {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Password
                 </label>
                 <input

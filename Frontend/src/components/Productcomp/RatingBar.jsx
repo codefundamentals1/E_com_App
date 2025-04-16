@@ -1,6 +1,6 @@
 import React from "react";
 import StarTemplate from "./StarTemplate";
-
+//take a string of reviews  and 
 const RatingBar = ({ reviews }) => {
   
   const ratingsCount = {
@@ -11,7 +11,7 @@ const RatingBar = ({ reviews }) => {
     1: 0
   };
 
-  
+  //total count if reviews
   reviews.forEach((review) => {
     if (review.rating >= 1 && review.rating <= 5) {
       ratingsCount[review.rating] += 1;
@@ -20,9 +20,8 @@ const RatingBar = ({ reviews }) => {
 
   
   const totalReviews = reviews.length;
-
-  
-  const calculatePercentage = (count) => {
+//for each star it calculate the percentage review of this 
+    const calculatePercentage = (count) => {
     return (count / totalReviews) * 100;
   };
 

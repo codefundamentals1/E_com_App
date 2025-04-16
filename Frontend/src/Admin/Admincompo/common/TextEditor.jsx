@@ -25,7 +25,7 @@ const TextEditor = ({ placeholder, value, onChange, label, valid, className }) =
 
   return (
     <div className={`input_field ${className ? className : ""}`}>
-      <label htmlFor={label}>{label}</label>
+      <label for={label}>{label}</label>
       <ReactQuill
         value={value}
         onChange={onChange}

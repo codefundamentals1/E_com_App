@@ -47,8 +47,8 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post('/api/auth/', {
-        username: formData.username,
+      const response = await axios.post('/hi/users/register', {
+        name: formData.username,
         email: formData.email,
         password: formData.password,
         passwordConf: formData.passwordConf,
@@ -80,7 +80,7 @@ const Signup = () => {
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Name
                 </label>
                 <input
@@ -96,7 +96,7 @@ const Signup = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Your email
                 </label>
                 <input
@@ -112,7 +112,7 @@ const Signup = () => {
               </div>
 
               <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Password
                 </label>
                 <input
@@ -128,7 +128,7 @@ const Signup = () => {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Confirm password
                 </label>
                 <input
@@ -156,7 +156,7 @@ const Signup = () => {
                   />
                 </div>
                 <div className="ml-3 text-sm">
-                  <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">
+                  <label for="terms" className="font-light text-gray-500 dark:text-gray-300">
                     I accept the{' '}
                     <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
                       Terms and Conditions

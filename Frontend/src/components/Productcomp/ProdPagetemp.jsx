@@ -6,6 +6,8 @@ const ProdPagetemp = () => {
   return (
     <>
     <Productpage></Productpage>
+    {/* //review page is temporay removed cause of database attribute problem  */}
+    
     {/* <ReviewPage></ReviewPage> */}
      </>
    

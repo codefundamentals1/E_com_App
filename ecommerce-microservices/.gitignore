@@ -1,0 +1,15 @@
+# Ignore all node_modules folders recursively
+node_modules/
+
+# Ignore all .env files recursively
+.env
+
+#IDE files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import axios from 'axios'; // Import Axios
-import logo from '../assets/Images/logo.png';
-import { useNavigate } from 'react-router-dom'; // To navigate after successful sign-in
+import React, { useState } from "react";
+import axios from "axios"; // Import Axios
+import logo from "../assets/Images/logo.png";
+import { useNavigate } from "react-router-dom"; // To navigate after successful sign-in
+import GooAuthButton from "./GooAuthButton";
 
 const Signin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate(); // For navigation
@@ -14,33 +15,37 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    setError("");
 
     try {
       // Send POST request to your API
-      const response = await axios.post('/api/auth/', {
-        logemail: email,
-        logpassword: password,
+      const response = await axios.post("/hi/users/login", {
+        email: email,
+        password: password,
       });
 
-      console.log('Signin Response:', response);
-      
-      // If authentication is successful, navigate to the homepage or dashboard
-      navigate('/'); // Redirect to the homepage or another page after login
+      console.log("Signin Response:", response);
 
+      // If authentication is successful, navigate to the homepage or dashboard
+      navigate("/"); // Redirect to the homepage or another page after login
     } catch (error) {
-      console.error('Signin Error:', error);
+      console.error("Signin Error:", error);
       // Handle error here
-      setError('Invalid credentials, please try again.');
+      setError("Invalid credentials, please try again.");
     } finally {
+      window.location.reload();
       setIsSubmitting(false); // Stop the loading state
     }
+    
   };
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+        <a
+          href="#"
+          className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
+        >
           <img className="w-8 h-8 mr-2" src={logo} alt="logo" />
           E-com
         </a>
@@ -51,7 +56,10 @@ const Signin = () => {
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label
+                  for="email"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Your email
                 </label>
                 <input
@@ -66,7 +74,10 @@ const Signin = () => {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label
+                  for="password"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Password
                 </label>
                 <input
@@ -88,16 +99,21 @@ const Signin = () => {
                       aria-describedby="remember"
                       type="checkbox"
                       className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                      
                     />
                   </div>
                   <div className="ml-3 text-sm">
-                    <label htmlFor="remember" className="text-gray-500 dark:text-gray-300">
+                    <label
+                      for="remember"
+                      className="text-gray-500 dark:text-gray-300"
+                    >
                       Remember me
                     </label>
                   </div>
                 </div>
-                <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">
+                <a
+                  href="#"
+                  className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
+                >
                   Forgot password?
                 </a>
               </div>
@@ -106,16 +122,23 @@ const Signin = () => {
                 disabled={isSubmitting}
                 className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
+                {isSubmitting ? "Signing in..." : "Sign in"}
               </button>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don’t have an account yet?{' '}
-                <a href="/auth/signup" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
+                Don’t have an account yet?{" "}
+                <a
+                  href="/auth/signup"
+                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                >
                   Sign up
                 </a>
               </p>
             </form>
+            <div className="flex items-center justify-center">
+              {" "}
+              <GooAuthButton></GooAuthButton>
+            </div>
           </div>
         </div>
       </div>

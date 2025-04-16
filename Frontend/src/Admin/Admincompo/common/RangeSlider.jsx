@@ -11,7 +11,7 @@ function RangeSlider({ values, onValuesChange,label }) {
   return (
     <div className="slider_main input_field ">
       {
-        label ? <label htmlFor={label}>{label}</label> : ''
+        label ? <label for={label}>{label}</label> : ''
       }
       <Slider
         min={0}

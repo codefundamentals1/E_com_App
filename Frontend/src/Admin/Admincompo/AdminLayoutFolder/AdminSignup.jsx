@@ -50,7 +50,7 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await axios.post('/hi/users/register', {
+      const response = await axios.post('/hi/seller/register', {
         email: formData.email,
         name: formData.username,
         password: formData.password
@@ -103,7 +103,7 @@ const AdminSignup = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label for="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Username
               </label>
               <input
@@ -119,7 +119,7 @@ const AdminSignup = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label for="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Email
               </label>
               <input
@@ -135,7 +135,7 @@ const AdminSignup = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label for="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Password
               </label>
               <input
@@ -152,7 +152,7 @@ const AdminSignup = () => {
             </div>
 
             <div>
-              <label htmlFor="passwordConf" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label for="passwordConf" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Confirm Password
               </label>
               <input
@@ -178,7 +178,7 @@ const AdminSignup = () => {
                 className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 required
               />
-              <label htmlFor="terms" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+              <label for="terms" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                 I agree to the <a href="#" className="text-primary-600 hover:underline">Terms and Conditions</a>
               </label>
             </div>
@@ -216,7 +216,7 @@ const AdminSignup = () => {
         <div className="text-center text-sm text-gray-600 dark:text-gray-400">
           Already have an account?{' '}
           <button 
-            onClick={() => navigate('/auth/signin')} 
+            onClick={() => navigate('/admin/signin')} 
             className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400"
           >
             Sign in

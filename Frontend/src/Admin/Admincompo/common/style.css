@@ -544,7 +544,7 @@ button[class^="button bg_light_"]:not(.outline):after {
 .tooltip:before {
   content: '';
   position: absolute;
-  clip-path: polygon(0% 0%, 100.1% 0%, 52.7% 100.3%);
+  clipPath: polygon(0% 0%, 100.1% 0%, 52.7% 100.3%);
   height: 6px;
   width: 15px;
   background: inherit;

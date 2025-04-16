@@ -1,25 +1,25 @@
 const genere= [
   {
-    "name": "smartphones",
-    "category": "smartphones"
+    "name": "food",
+    "category": "food"
     
   },
     {
 
-      "name": "beauty",
-      "category": "beauty"
+      "name": "Mens",
+      "category": "men"
       
     },
     {
 
-      "name": "fragrances",
-      "category": "fragrances"
+      "name": "Beauty and personal care",
+      "category": "beauty"
     },
     
     {
 
-      "name": "groceries",
-      "category": "groceries"
+      "name": "Fashion",
+      "category": "fashion"
     },
     {
 

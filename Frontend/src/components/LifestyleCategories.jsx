@@ -21,12 +21,12 @@ const LifestyleCategories = () => {
     { id: 5, name: "Makeup", image: makeup },
     { id: 6, name: "Electronics", image: electronics },
   ];
-
-  console.log("Lifestyle categories:", categories);
+// check it while testing server 
+  // console.log("Lifestyle categories:", categories);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-black">
-      {/* Left Section: Lifestyle Categories */}
+      {/* Left Section=> Lifestyle Categories */}
       <div className="text-white p-6">
         <h2 className="text-xl font-bold mb-2">ALL THINGS LIFESTYLE</h2>
         <p className="mb-6">Touch base with loot-worthy staples</p>
@@ -40,7 +40,7 @@ const LifestyleCategories = () => {
         </div>
       </div>
 
-      {/* Right Section: Under Price Cards */}
+      {/* Right Section=> Under Price Cards */}
       <div className=" mt-12 p-6">
         <h2 className="text-xl font-bold mb-2 text-white">Deals Under</h2>
         <div className="grid grid-cols-2 md:grid-cols-2 gap-6">

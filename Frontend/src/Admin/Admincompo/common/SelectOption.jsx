@@ -11,9 +11,9 @@ const SelectOption = ({ icon, options, label, valid, className, placeholder, mul
 
   return (
     <div className={`select_option input_field ${className}`}>
-      {label ? <label htmlFor={label}>{label}</label> : ''}
+      {label ? <label for={label}>{label}</label> : ''}
       <div className="input_field_wrapper">
-        {icon ? <label htmlFor={label} className="input_icon">{icon}</label> : ''}
+        {icon ? <label for={label} className="input_icon">{icon}</label> : ''}
         <Select
           isMulti={multiSelect}
           options={options}

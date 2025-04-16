@@ -12,7 +12,7 @@ const AdminNavbar = () => {
   });
 
   return (
-    <div className="navbar">
+    <div className="navbar min-w-[1700px]">
       <div className="navbar_wrapper">
         <div className="container">
           <div className="navbar_main">

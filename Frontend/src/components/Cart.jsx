@@ -3,6 +3,7 @@ import { IoMdAdd , IoMdRemove } from "react-icons/io";
 import axios from 'axios';
 import GlobalApi from '../Services/GlobalApi';
 import CardOfcart from './cartCompo/CardOfcart';
+import CheckoutDialog from './address';
 
 const Cart = () => {
   const [cartItem, setCartItem] = useState([]);
@@ -10,11 +11,14 @@ const Cart = () => {
   const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [tax, setTax] = useState(0);
+  const [isCopen,setIsCopen] = useState(false)
 
   // Fetch Cart Items from API
   const fetchCart = async () => {
     try {
-      const response = await axios.get("/api/getCart");
+      const response = await axios.post("/hi/carts/getitems",{
+
+      });
       console.log("Cart Data Received:", response.data);
   
       if (Array.isArray(response.data)) {  
@@ -36,7 +40,8 @@ const Cart = () => {
   const getitemByid = async (id, count) => {
     try {
       console.log("Fetching details for ID:", id);
-      const resp = await GlobalApi.getItemByid(id);
+      const resp = await axios.get(`/hi/products/${id}`);
+      console.log("cart item fetched: ", resp.data)
       
       console.log("Full API Response:", resp);  
       if (!resp?.data) {
@@ -50,6 +55,10 @@ const Cart = () => {
       return null;
     }
   };
+
+  const closeDialog = ()=>{
+    setIsCopen(false)
+  }
   
   // Fetch Details for All Cart Items
   const fetchAllItems = async () => {
@@ -57,7 +66,7 @@ const Cart = () => {
   
     try {
       const itemDetails = await Promise.all(
-        cartItem.map((item) => getitemByid(item.id, item.count))
+        cartItem.map((item) => getitemByid(item.productId, item.quantity))
       );
   
       // Filter out null responses
@@ -68,6 +77,26 @@ const Cart = () => {
       console.error("Error fetching cart details:", err);
     }
   };
+
+  const placeOrder = async(formData )=>{
+    const {paymentMethod, deliveryAddress, phoneNumber} = formData
+    try{
+
+      const res = await axios.post("/hi/orders/checkout",{
+        paymentMethod:paymentMethod,
+        deliveryAddress:deliveryAddress,
+        phoneNumber:phoneNumber
+      })
+
+      alert(`${res.status} - ${res.statusText} `)
+      setIsCopen(false)
+      // fetchCart()
+      window.location.reload()
+    }
+    catch(error){
+      console.error("order errro: ",error.message)
+    }
+  }
   
 
   // Fetch Item Details when cartItem changes
@@ -84,7 +113,8 @@ console.log("Updated deatiled list"+ Array.isArray(detailedcartItem))
 
   function  gettotal(){
     let sum = 0;
-    detailedcartItem.forEach((item)=>sum+=(item.price *item.count))
+    console.log("det",detailedcartItem)
+    detailedcartItem.forEach((item)=>sum+=(item.final_price *item.count))
     console.log(sum)
   return sum;
   }
@@ -145,7 +175,7 @@ const updateItemCount = (id, newCount) => {
           {
             detailedcartItem.map((item , index)=>(
               
-              <CardOfcart    updateItemCount={updateItemCount}  key={index}item = {item}></CardOfcart>
+              <CardOfcart    updateItemCount={updateItemCount}  fetchCart={fetchCart} key={index}item = {item}></CardOfcart>
               
             
             ))
@@ -341,7 +371,7 @@ const updateItemCount = (id, newCount) => {
                 <p className="text-lg font-bold text-gray-900 dark:text-white">
                   <span className="line-through"> $1799,99 </span>
                 </p>
-                <p className="text-lg font-bold leading-tight text-red-600 dark:text-red-500">$1199</p>
+                <p className="text-lg font-bold leading-tight text-red-600 dark:text-red-500">₹1199</p>
               </div>
               <div className="mt-6 flex items-center gap-2.5">
                 <button data-tooltip-target="favourites-tooltip-3" type="button" className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
@@ -374,32 +404,32 @@ const updateItemCount = (id, newCount) => {
             <div className="space-y-2">
               <dl className="flex items-center justify-between gap-4">
                 <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Original price</dt>
-                <dd className="text-base font-medium text-gray-900 dark:text-white">${(total.toFixed(2))}</dd>
+                <dd className="text-base font-medium text-gray-900 dark:text-white">₹{(total.toFixed(2))}</dd>
               </dl>
 
               <dl className="flex items-center justify-between gap-4">
                 <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Savings</dt>
-                <dd className="text-base font-medium text-green-600">-${(discount.toFixed(2))}</dd>
+                <dd className="text-base font-medium text-green-600">-₹{(discount.toFixed(2))}</dd>
               </dl>
 
               <dl className="flex items-center justify-between gap-4">
                 <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Store Pickup</dt>
-                <dd className="text-base font-medium text-gray-900 dark:text-white">$99</dd>
+                <dd className="text-base font-medium text-gray-900 dark:text-white">₹99</dd>
               </dl>
 
               <dl className="flex items-center justify-between gap-4">
                 <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Tax</dt>
-                <dd className="text-base font-medium text-gray-900 dark:text-white">${(tax.toFixed(2))}</dd>
+                <dd className="text-base font-medium text-gray-900 dark:text-white">₹{(tax.toFixed(2))}</dd>
               </dl>
             </div>
 
             <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
               <dt className="text-base font-bold text-gray-900 dark:text-white">Total</dt>
-              <dd className="text-base font-bold text-gray-900 dark:text-white">${(gettgrandotal().toFixed(2))}</dd>
+              <dd className="text-base font-bold text-gray-900 dark:text-white">₹{(gettgrandotal().toFixed(2))}</dd>
             </dl>
           </div>
 
-          <a href="#" className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Proceed to Checkout</a>
+          <button onClick={()=>setIsCopen(true)} className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Proceed to Checkout</button>
 
           <div className="flex items-center justify-center gap-2">
             <span className="text-sm font-normal text-gray-500 dark:text-gray-400"> or </span>
@@ -424,6 +454,7 @@ const updateItemCount = (id, newCount) => {
       </div>
     </div>
   </div>
+  <CheckoutDialog  isOpen={isCopen} onClose={closeDialog} onSubmit={placeOrder}/>
 
 </div>
     </>

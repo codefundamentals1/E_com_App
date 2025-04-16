@@ -16,6 +16,7 @@ import HeaderItems from "./HeaderItems";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import ProductSearch from "./ProductSearch";
+//json array for the header 
 const profileMenu = [
   // {
   //    name: "login/signup",
@@ -54,44 +55,163 @@ const Topheader = () => {
   const [isUserSignedIn, setIsUserSignedIn] = useState(false);
 
 
+
+
+
   const handleLogout = async () => {
     try {
-      console.log("Logging out...");
-  
-      // Send GET request to logout API
-      const response = await axios.get("/api/auth/logout", { withCredentials: true });
-  
-      // Handle successful logout
-      if (response.status === 200) {
-        console.log(response.data.message); // 'Logged out successfully'
-  
-        // Remove session cookie from the client (optional, as server already clears it)
-        Cookies.remove("connect.sid");
-  
-        // Update state to reflect that the user is logged out
-        setIsUserSignedIn(false);
+      console.log("[Frontend] Initiating logout process...");
+      
+      // 1. Attempt backend logout with detailed request logging
+      const response = await axios.post('/hi/users/logout', {}, {
+        withCredentials: true,
+        timeout: 5000,
+        headers: {
+          'X-Request-ID': crypto.randomUUID(), // Unique ID for request tracing
+          'X-Logout-Source': 'web-app' // Identify frontend source
+        }
+      });
+
+      console.log("[Frontend] Logout API response:", {
+        status: response.status,
+        data: response.data,
+        headers: response.headers
+      });
+
+      if (!response.data.success) {
+        throw new Error(`Backend reported logout failure: ${response.data.error || 'Unknown error'}`);
       }
-    } 
-    catch (error) {
-      console.error("Logout failed:", error);
+
+      // 2. Client-side cleanup with detailed logging
+      const cleanup = () => {
+        console.log("[Frontend] Performing client-side cleanup...");
+        
+        // Remove all auth-related client storage with timestamps
+        const removalTime = new Date().toISOString();
+        Cookies.remove("authToken", { path: '/', domain: window.location.hostname });
+        console.log(`[Frontend] Removed authToken cookie at ${removalTime}`);
+        
+        localStorage.removeItem("userData");
+        console.log(`[Frontend] Cleared userData from localStorage at ${removalTime}`);
+        
+        sessionStorage.clear();
+        console.log(`[Frontend] Cleared all sessionStorage at ${removalTime}`);
+        
+        // Reset application state
+        setIsUserSignedIn(false);
+        console.log("[Frontend] Updated auth state to logged out");
+
+        // Redirect with cache busting
+        const redirectUrl = `/auth/login?logout=success&t=${Date.now()}`;
+        console.log(`[Frontend] Redirecting to: ${redirectUrl}`);
+        window.location.href = redirectUrl;
+      };
+
+      cleanup();
+      
+    } catch (error) {
+      console.error("[Frontend] Logout error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+
+      // Emergency cleanup with fallbacks
+      console.warn("[Frontend] Executing emergency cleanup...");
+      document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      localStorage.clear();
+      sessionStorage.clear();
+      setIsUserSignedIn(false);
+
+      // Enhanced error redirect with error details
+      const errorParams = new URLSearchParams({
+        error: 'logout_failed',
+        code: error.response?.status || 'client_error',
+        t: Date.now() // Cache bust
+      });
+      
+      if (process.env.NODE_ENV === 'development') {
+        errorParams.set('debug', error.message);
+      }
+
+      const errorRedirect = `/auth/login?${errorParams.toString()}`;
+      console.warn(`[Frontend] Emergency redirect to: ${errorRedirect}`);
+
+      // Triple-layered redirect assurance
+      navigate(errorRedirect, { replace: true });
+      setTimeout(() => {
+        if (!window.location.pathname.startsWith('/auth/login')) {
+          window.location.assign(errorRedirect);
+        }
+      }, 500);
+
+      // Final fallback after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/auth/login?force_logout=true';
+      }, 2000);
     }
   };
-  
   useEffect(() => {
-    // Check if the user is logged in by calling the backend endpoint
-    axios.get('/api/auth/check', { withCredentials: true })
-      .then(response => {
-        if (response.data.loggedIn) {
+    const checkAuthStatus = async () => {
+      console.log("Checking authentication status...");
+      try {
+        const response = await axios.get('/hi/users/check', {
+          withCredentials: true,
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Accept': 'application/json'
+          },
+          timeout: 5000 // 5 second timeout
+        });
+  
+        console.log("Auth check response:", response.data);
+        
+        if (response.data?.loggedIn) {
           setIsUserSignedIn(true);
+          console.log("User is authenticated");
         } else {
           setIsUserSignedIn(false);
+          console.log("User is not authenticated");
+          // Clear any invalid tokens
+          document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
-      })
-      .catch(error => {
-        console.error('Error checking user session', error);
-        setIsUserLoggedIn(false); // Handle error, assume not logged in
-      });
+      } catch (error) {
+        setIsUserSignedIn(false);
+        
+        // Detailed error analysis
+        if (error.code === 'ECONNABORTED') {
+          console.error('Auth check timeout - server might be slow');
+        } else if (error.response) {
+          // Server responded with status code outside 2xx
+          console.error('Auth check failed with status:', error.response.status);
+          console.error('Response data:', error.response.data);
+        } else if (error.request) {
+          // No response received
+          console.error('No response from auth check - network error');
+        } else {
+          // Request setup error
+          console.error('Error setting up auth check:', error.message);
+        }
+  
+        // Clear potentially invalid credentials
+        document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
+    };
+  
+    // Initial check
+    checkAuthStatus();
+  
+    // Set up periodic checks (every 1 minute)
+    const intervalId = setInterval(checkAuthStatus, 60000);
+    
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
+
+
+  
 
 
 

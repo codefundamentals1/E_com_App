@@ -12,7 +12,7 @@ const Adminmain = () => {
   }, [location, navigate]);
 
   return (
-    <div className=" main">
+    <div className="main min-w-[1700px]">
       <Routes>
           {CustomRoutes.map((route, key) => (
             <Route

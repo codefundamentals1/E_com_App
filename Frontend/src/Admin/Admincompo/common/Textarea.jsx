@@ -9,9 +9,9 @@ const Input = ({ className, type, placeholder, value, onChange, icon, label,vali
 
   return (
     <div className={`input_field ${className ? className : ""}`}>
-      { label ? <label htmlFor={label}>{label}</label> : ''}
+      { label ? <label for={label}>{label}</label> : ''}
       <div className="input_field_wrapper">
-        {icon?<label htmlFor={label} className="input_icon">{icon}</label>:''}
+        {icon?<label for={label} className="input_icon">{icon}</label>:''}
       <textarea
         type={type}
         value={value}

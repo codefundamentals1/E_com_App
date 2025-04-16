@@ -16,8 +16,8 @@ const CustomCalendar = ({ onDateChange,className,label,valid,icon }) => {
 
   return (
     <div className={`input_field calendar ${className?className:""}`}>
-      <label htmlFor={label}>{label}</label>
-      <label htmlFor={label} className="input_icon">{icon}</label>
+      <label for={label}>{label}</label>
+      <label for={label} className="input_icon">{icon}</label>
       <DatePicker
         className="calendar_input"
         selected={selectedDate}

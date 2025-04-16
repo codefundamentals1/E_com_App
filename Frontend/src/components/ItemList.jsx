@@ -3,12 +3,25 @@ import GlobalApi from '../Services/GlobalApi'
 import { IoChevronBackOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import HrItemCard from './HrItemCard';
 import ItemCard from './ItemCard';
+import axios from 'axios';
 
 function ItemList({category ,index_}) {
     const [itemList,setitemList]=useState([])
+const [products , setProducts] = useState([])
 console.log(category);
+const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`/hi/products/category/${category}`);
+      // console.log("Products from database", response.data);
+      setProducts(response.data); 
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } 
+  };
 
-   
+useEffect(() => {
+    fetchProducts();
+  }, []); // The empty dependency array ensures this runs only once on mount
 
     const elementRef=useRef(null);
     useEffect(()=>{
@@ -48,7 +61,7 @@ console.log(category);
    
     <div ref={elementRef} className="scroll-my-0 flex overflow-x-auto overflow-y-hidden gap-8 
              scrollbar-none scroll-smooth pt-4 px-3">
-     {itemList.map((item,index)=>(
+     {products.map((item,index)=>(
            <>
           {<ItemCard item={item} />}
            </> 
