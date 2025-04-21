@@ -18,11 +18,12 @@ This project is a simple e-commerce shopping cart system built using **React.js*
 ### **Backend:**
 - Node.js (Express.js)
 - `Map()` for managing cart data
+- MongoDB for database
 
 ## Setup & Installation
 ### **1. Clone the Repository**
 ```sh
-git clone https://github.com/your-repo-url.git
+clone this repo
 cd your-project-folder
 ```
 
@@ -56,3 +57,8 @@ Feel free to contribute or raise issues!
 
 ## License
 
+## cmd
+```sh
+find . -maxdepth 2 -name server.js | xargs -I {} -P 0 alacritty -e bash -c 'cd $(dirname {}) && npm i s' \;
+find . -maxdepth 2 -name server.js | xargs -I {} -P 0 alacritty -e bash -c 'cd $(dirname {}) && nodemon server.js' \;
+```
