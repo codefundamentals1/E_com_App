@@ -8,7 +8,7 @@ const VariationSchema = new Schema({
 
 const ProductSchema = new Schema({
 
-  timestamp: { type: Date, default: null },
+  timestamp: { type: Date, default: Date.now },
   title: { type: String, required: true },
   seller_name: { type: String },
   brand: { type: String },

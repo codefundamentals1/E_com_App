@@ -62,6 +62,7 @@ UserSchema.methods.comparePassword = async function(candidatePassword) {
   if (this.authProvider !== 'local') {
     throw new Error('Password authentication not supported for OAuth users.');
   }
+    
   return bcrypt.compare(candidatePassword, this.password);
 };
 

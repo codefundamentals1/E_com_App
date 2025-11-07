@@ -11,13 +11,14 @@ const { authenticate } = require('../middleware/auth');
 const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || 'http://localhost:3000/products';
 
 // Checkout: Convert cart into an order
-router.post('/checkout', async (req, res) => {
+router.post('/checkout',authenticate, async (req, res) => {
+  
+  
   try {
-    // const userId = req.user.id;
+    const userId = req.user.id;
     const { paymentMethod, deliveryAddress, phoneNumber } = req.body;
 
-    console.log(req.body)
-
+    console.log("In OrderRoute placing order for userid: ",userId)
     if (!paymentMethod || !deliveryAddress || !phoneNumber) {
       return res.status(400).json({
         error: 'Payment method, delivery address, and phone number are required.'
@@ -25,7 +26,7 @@ router.post('/checkout', async (req, res) => {
     }
 
     // Find the user's cart to transfer the cart into order
-    const cart = await Cart.findOne({ createdBy: "63d5a0dd-ba82-4467-8193-a333aa6851e0" });
+    const cart = await Cart.findOne({ createdBy: userId });
     if (!cart) {
       return res.status(400).json({ error: 'No active cart found for this user.' });
     }
@@ -37,7 +38,7 @@ router.post('/checkout', async (req, res) => {
 
     // Create a new order
     const order = new Order({
-      userId:"63d5a0dd-ba82-4467-8193-a333aa6851e0",
+      userId:userId,
       paymentMethod,
       deliveryAddress,
       phoneNumber,
@@ -111,9 +112,10 @@ router.post('/checkout', async (req, res) => {
 });
 
 //get all orders for the user
-router.get('/user/:userId', authenticate, async (req, res) => {
+router.post('/orderuser', authenticate, async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.params.userId }).sort({ orderPlacedTime: -1 });
+    console.log("fetchig order for ",req.user.id)
+    const orders = await Order.find({ userId: req.user.id }).sort({ orderPlacedTime: -1 });
 
     const summaries = await Promise.all(orders.map(async (order) => {
       const orderLines = await OrderLine.find({ orderId: order._id });
@@ -132,7 +134,8 @@ router.get('/user/:userId', authenticate, async (req, res) => {
       };
     }));
 
-    res.json(summaries);
+    // console.log(summaries)
+    res.status(200).json(summaries);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

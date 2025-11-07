@@ -5,6 +5,32 @@ const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
 
+router.get("/health" , (req , res)=>{
+  console.log("app i s ok")
+})
+
+router.get('/search', async (req, res) => {
+  console.log("api hitteed")
+  try {
+    const { query } = req.query;
+console.log("query data  is ", query)
+    if (!query) {
+      return res.status(400).json({ error: "Search query is required" });
+    }
+
+    const products = await Product.find({
+      title: { $regex: query, $options: 'i' }
+    }).limit(50).lean();
+
+    // Return the products found
+    res.send(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 // ==============================
 // Get Product by ID (with DummyJSON fallback)
 // ==============================
@@ -45,6 +71,7 @@ router.get('/:id', async (req, res) => {
 // Get All Products (limit optional)
 // ==============================
 router.get('/', async (req, res) => {
+  console.log("getting all the products")
   try {
     const products = await Product.find().limit(50).lean();
     res.send(products);
@@ -52,6 +79,8 @@ router.get('/', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+//seach products : 
+
 
 // ==============================
 // Seller: Add a New Product (Authenticated Sellers Only)
@@ -68,7 +97,7 @@ router.post('/', async (req, res) => {
     req.body.seller_id = sellerId;
     
     const product = new Product({ ...req.body });
-
+    console.log("into adding product into seller " , req.body);
     await product.save();
     console.log("product saved ")
     res.status(201).json(product);
@@ -229,69 +258,71 @@ router.get('/category/:categoryName', async (req, res) => {
 // Search Products (with optional filters, sorting, and pagination)
 // ==============================
 
-router.get('/search', async (req, res) => {
-  try {
-    const { query, limit, page, sortField, sortOrder, category } = req.query;
 
-    // Validate that 'query' exists
-    if (!query || typeof query !== 'string') {
-      return res.status(400).json({ error: 'Search query is required' });
-    }
+// router.get('/search', async (req, res) => {
+//   console.log("into pattern search ")
+//   try {
+//     const { query, limit, page, sortField, sortOrder, category } = req.query;
 
-    // Define pagination and sorting parameters
-    const limitNumber = parseInt(limit) || 10;
-    const pageNumber = parseInt(page) || 1;
+//     // Validate that 'query' exists
+//     if (!query || typeof query !== 'string') {
+//       return res.status(400).json({ error: 'Search query is required' });
+//     }
 
-    // Define the filter object for querying
-    const filter = {
-      $or: [
-        { title: { $regex: query, $options: 'i' } }, 
-        { description: { $regex: query, $options: 'i' } }, 
-        { categories: { $elemMatch: { $regex: query, $options: 'i' } } }, 
-        { seller_name: { $regex: query, $options: 'i' } } 
-      ]
-    };
+//     // Define pagination and sorting parameters
+//     const limitNumber = parseInt(limit) || 10;
+//     const pageNumber = parseInt(page) || 1;
 
-    // Add the category filter if it's provided
-    if (category) {
-      filter.categories = { $regex: category, $options: 'i' }; 
-    }
+//     // Define the filter object for querying
+//     const filter = {
+//       $or: [
+//         { title: { $regex: query, $options: 'i' } }, 
+//         { description: { $regex: query, $options: 'i' } }, 
+//         { categories: { $elemMatch: { $regex: query, $options: 'i' } } }, 
+//         { seller_name: { $regex: query, $options: 'i' } } 
+//       ]
+//     };
 
-    // Add sorting if provided orelse not sorted
-    const sortOptions = sortField && sortOrder
-      ? { [sortField]: sortOrder === 'asc' ? 1 : -1 }
-      : {};
+//     // Add the category filter if it's provided
+//     if (category) {
+//       filter.categories = { $regex: category, $options: 'i' }; 
+//     }
 
-    // Perform the query
-    const [results, totalCount] = await Promise.all([
-      Product.find(filter)
-        .sort(sortOptions)
-        .skip((pageNumber - 1) * limitNumber)
-        .limit(limitNumber)
-        .lean(), 
-      Product.countDocuments(filter) 
-    ]);
+//     // Add sorting if provided orelse not sorted
+//     const sortOptions = sortField && sortOrder
+//       ? { [sortField]: sortOrder === 'asc' ? 1 : -1 }
+//       : {};
 
-    // Return the search results 
-    return res.json({
-      success: true,
-      message: 'Search completed successfully',
-      data: {
-        query,
-        results,
-        pagination: {
-          total: totalCount,
-          page: pageNumber,
-          pages: Math.ceil(totalCount / limitNumber),
-          limit: limitNumber
-        }
-      }
-    });
-  } catch (err) {
-    console.error('Error in search route:', err.message);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+//     // Perform the query
+//     const [results, totalCount] = await Promise.all([
+//       Product.find(filter)
+//         .sort(sortOptions)
+//         .skip((pageNumber - 1) * limitNumber)
+//         .limit(limitNumber)
+//         .lean(), 
+//       Product.countDocuments(filter) 
+//     ]);
+
+//     // Return the search results 
+//     return res.json({
+//       success: true,
+//       message: 'Search completed successfully',
+//       data: {
+//         query,
+//         results,
+//         pagination: {
+//           total: totalCount,
+//           page: pageNumber,
+//           pages: Math.ceil(totalCount / limitNumber),
+//           limit: limitNumber
+//         }
+//       }
+//     });
+//   } catch (err) {
+//     console.error('Error in search route:', err.message);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 
 
 module.exports = router;

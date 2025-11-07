@@ -24,7 +24,7 @@
 //     console.log("checking login")
 //     try {
 //       setLoading(true);
-      
+
 //       // First check if the authToken cookie exists
 //       const authToken = getCookie('authToken');
 //       if (!authToken) {
@@ -71,26 +71,24 @@
 
 // export default Admin
 
-
-
-import React, { useEffect, useState } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import AdminLayout from './AdminLayout'
-import '../../styles/style.min.css'
-import AdminLogin from './AdminLogin'
-import AdminSignup from './AdminSignup'
-import { useAuth } from './AuthProvider'
-import axios from 'axios'
-import Cookies from 'js-cookie' // Import js-cookie
+import React, { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import AdminLayout from "./AdminLayout";
+import "../../styles/style.min.css";
+import AdminLogin from "./AdminLogin";
+import AdminSignup from "./AdminSignup";
+import { useAuth } from "./AuthProvider";
+import axios from "axios";
+import Cookies from "js-cookie"; // Import js-cookie
 
 const Admin = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(null);
 
   // Function to check auth status
   const checkAuth = async () => {
-    console.log("checking login")
+    console.log("checking login");
     try {
       setLoading(true);
 
@@ -99,22 +97,32 @@ const Admin = () => {
       const getCookie = (name) => {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
+        if (parts.length === 2) return parts.pop().split(";").shift();
       };
       console.log(document.cookie); // This will show all cookies accessible to the current domain
 
-      const authToken= getCookie('authToken');
-      console.log(authToken)
+      const authToken = getCookie("authToken");
+      console.log("for admin: ", authToken);
       if (!authToken) {
+
         setIsAuthenticated(false);
         setUser(null);
         return;
       } else {
-        console.log("Token is " + authToken)
-        setIsAuthenticated(true);
+        console.log("Token is " + authToken);
+        const res = await axios.get("/hi/seller/check");
+
+        if (res.status === 200) {
+          console.log("seller authorised ")
+          setIsAuthenticated(true);
+        } else {
+          console.log("seller not authorised")
+          setIsAuthenticated(false);
+          setUser(null);
+        }
       }
     } catch (error) {
-      console.error('Error checking user session', error);
+      console.error("Error checking user session", error);
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -142,7 +150,7 @@ const Admin = () => {
         <AdminLayout user={user} />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Admin
+export default Admin;

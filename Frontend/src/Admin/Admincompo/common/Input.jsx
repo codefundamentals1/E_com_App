@@ -3,7 +3,9 @@ import React from 'react';
 const Input = ({ className, type, placeholder, value, onChange,onClick, icon, max, label,valid, required, name, readOnly }) => {
   const handleChange = (e) => {
     if (onChange) {
+      console.log(e.target.value)
       onChange(e.target.value);
+      
     }
   };
 

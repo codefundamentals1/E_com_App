@@ -7,6 +7,7 @@ import StarTemplate from "./StarTemplate";
 import RatingBar from "./RatingBar";
 import TickMark from "./TickMark";
 import Banner from "./Banner";
+import Cookies from "js-cookie"
 
 const Productpage = () => {
   const [itemdetails, setItemdetails] = useState([]);
@@ -56,11 +57,14 @@ const Navigate = useNavigate();
   }
 
   const handleAddtoCart = async (id) => {
+    const authToken = Cookies.get("authToken")
+    console.log("adding to cart for user: "+ authToken+ "produci id is " + id)
     try {
       console.log("Item added:");
 
-      const response = await axios.post('/hi/carts/items',{ productId: id ,quantity: count}, { withCredentials: true });
+      const response = await axios.post('/hi/carts/items',{ productId: id ,quantity: count , authToken: authToken}, { withCredentials: true });
       console.log("Item added:", response.data);
+      window.alert("item added to cart")
     } catch (error) {
       console.error("Error adding item:", error);
     }
@@ -224,7 +228,7 @@ const Navigate = useNavigate();
                       </svg>
                     </button>
                   </div>
-                  <button onClick={()=>handleAddtoCart(itemdetails.id)} className="group py-4 px-5 rounded-full bg-indigo-50 text-indigo-600 font-semibold text-lg w-full flex items-center justify-center gap-2 transition-all duration-500 hover:bg-indigo-100">
+                  <button onClick={()=>handleAddtoCart(itemdetails._id)} className="group py-4 px-5 rounded-full bg-indigo-50 text-indigo-600 font-semibold text-lg w-full flex items-center justify-center gap-2 transition-all duration-500 hover:bg-indigo-100">
                     <svg
                       className="stroke-indigo-600 "
                       width="22"

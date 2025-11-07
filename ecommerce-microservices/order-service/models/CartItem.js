@@ -5,6 +5,7 @@ const CartItemSchema = new Schema({
     
   cartId: { type: String, ref: 'Cart', required: true },
   productId: { type: String, ref: 'Product', required: true },
+  sellerId: { type: String, ref: 'Seller',required: true },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true, min: 1 },
   createdAt: { type: Date, default: Date.now }

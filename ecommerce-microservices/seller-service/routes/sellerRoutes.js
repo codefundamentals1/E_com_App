@@ -9,6 +9,10 @@ const { authenticate } = require('../middleware/auth');
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL;
 
+router.get("/check", authenticate, (req, res)=>{
+  res.status(200).json({msg:req.user.id});
+
+})
 
 router.post('/register', async (req, res) => {
   console.log("seller creating")

@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios'
 import {Link,useNavigate} from 'react-router-dom'
 import Cookies from 'js-cookie'; // Import cookie library
+import { contextType } from 'react-quill';
 
 function ItemCard({item}) {
   const Navigate = useNavigate();
@@ -47,6 +48,7 @@ const handleAddToCart = async (productId) => {
       const authToken = Cookies.get('authToken');
       console.log("Auth token " + authToken)
       if (!authToken) {
+        window.alert("user not logged in")
         throw new Error('Authentication token not found');
       }
 

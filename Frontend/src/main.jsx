@@ -21,6 +21,7 @@ import Admin from "./Admin/Admincompo/AdminLayoutFolder/Admin.jsx";
 import Adminmain from "./Admin/Admincompo/AdminLayoutFolder/Adminmain.jsx";
 import ProductListingCard from "./components/ProductListing/ProductListingCard.jsx";
 import { GoogleAuthProvider } from "./Services/GoogleAuthProvider.jsx";
+import Orders from "./components/Orders.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,11 +29,12 @@ const router = createBrowserRouter(
       <Route path="/" element={<Layout />}>
         <Route path="" element={<Home />} />
         <Route path="cart" element={<Cart />} />
+        <Route path="myorders" element={<Orders/>}/>
         <Route path="auth/signin" element={<Signin />} />
         <Route path="auth/signup" element={<Signup />} />
         <Route path="product/overview/:id" element={<ProdPagetemp />} />
-        <Route path="listing" element={<ProductListingCard />} />
-        <Route path="listing/:id" element={<ProductListingCard />} />
+        <Route path="search" element={<ProductListingCard />} />
+        {/* <Route path="listing/:id" element={<ProductListingCard />} /> */}
       </Route>
 
       {/* Routes for admin */}

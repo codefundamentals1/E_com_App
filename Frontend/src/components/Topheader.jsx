@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import logo from '../assets/Images/logo.png'
+import logo from "../assets/Images/logo.png";
 import { CiHeart, CiShoppingCart } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
 import propic from "../assets/Images/propic.png";
-import axios from 'axios'
+import axios from "axios";
 import {
   FaUser,
   FaShoppingBag,
@@ -16,36 +16,43 @@ import HeaderItems from "./HeaderItems";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import ProductSearch from "./ProductSearch";
-//json array for the header 
+import SearchBar from "./SearchBar";
+//json array for the header
 const profileMenu = [
   // {
-  //    name: "login/signup",
-  //    icon: MdAccountCircle,
-
+  //   name: "login/signup",
+  //   icon: MdAccountCircle,
+  //   link: "/",
   // },
   {
     name: "My Profile",
     icon: FaUser,
+    link: "/",
   },
   {
     name: "Get premium",
     icon: FaStar,
+    link: "/",
   },
   {
     name: "Orders",
     icon: FaShoppingBag,
+    link: "/myorders",
   },
   {
     name: "Wishlist",
     icon: FaHeart,
+    link: "/",
   },
   {
     name: "Rewards",
     icon: FaTrophy,
+    link: "/",
   },
   {
     name: "Gift Cards",
     icon: FaGift,
+    link: "/",
   },
 ];
 
@@ -54,49 +61,58 @@ const Topheader = () => {
   const [user, setUser] = useState(false);
   const [isUserSignedIn, setIsUserSignedIn] = useState(false);
 
-
-
-
-
   const handleLogout = async () => {
     try {
       console.log("[Frontend] Initiating logout process...");
-      
+
       // 1. Attempt backend logout with detailed request logging
-      const response = await axios.post('/hi/users/logout', {}, {
-        withCredentials: true,
-        timeout: 5000,
-        headers: {
-          'X-Request-ID': crypto.randomUUID(), // Unique ID for request tracing
-          'X-Logout-Source': 'web-app' // Identify frontend source
+      const response = await axios.post(
+        "/hi/users/logout",
+        {},
+        {
+          withCredentials: true,
+          timeout: 5000,
+          headers: {
+            "X-Request-ID": crypto.randomUUID(), // Unique ID for request tracing
+            "X-Logout-Source": "web-app", // Identify frontend source
+          },
         }
-      });
+      );
 
       console.log("[Frontend] Logout API response:", {
         status: response.status,
         data: response.data,
-        headers: response.headers
+        headers: response.headers,
       });
 
       if (!response.data.success) {
-        throw new Error(`Backend reported logout failure: ${response.data.error || 'Unknown error'}`);
+        throw new Error(
+          `Backend reported logout failure: ${
+            response.data.error || "Unknown error"
+          }`
+        );
       }
 
       // 2. Client-side cleanup with detailed logging
       const cleanup = () => {
         console.log("[Frontend] Performing client-side cleanup...");
-        
+
         // Remove all auth-related client storage with timestamps
         const removalTime = new Date().toISOString();
-        Cookies.remove("authToken", { path: '/', domain: window.location.hostname });
+        Cookies.remove("authToken", {
+          path: "/",
+          domain: window.location.hostname,
+        });
         console.log(`[Frontend] Removed authToken cookie at ${removalTime}`);
-        
+
         localStorage.removeItem("userData");
-        console.log(`[Frontend] Cleared userData from localStorage at ${removalTime}`);
-        
+        console.log(
+          `[Frontend] Cleared userData from localStorage at ${removalTime}`
+        );
+
         sessionStorage.clear();
         console.log(`[Frontend] Cleared all sessionStorage at ${removalTime}`);
-        
+
         // Reset application state
         setIsUserSignedIn(false);
         console.log("[Frontend] Updated auth state to logged out");
@@ -108,32 +124,32 @@ const Topheader = () => {
       };
 
       cleanup();
-      
     } catch (error) {
       console.error("[Frontend] Logout error details:", {
         name: error.name,
         message: error.message,
         stack: error.stack,
         response: error.response?.data,
-        status: error.response?.status
+        status: error.response?.status,
       });
 
       // Emergency cleanup with fallbacks
       console.warn("[Frontend] Executing emergency cleanup...");
-      document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      document.cookie =
+        "authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
       localStorage.clear();
       sessionStorage.clear();
       setIsUserSignedIn(false);
 
       // Enhanced error redirect with error details
       const errorParams = new URLSearchParams({
-        error: 'logout_failed',
-        code: error.response?.status || 'client_error',
-        t: Date.now() // Cache bust
+        error: "logout_failed",
+        code: error.response?.status || "client_error",
+        t: Date.now(), // Cache bust
       });
-      
-      if (process.env.NODE_ENV === 'development') {
-        errorParams.set('debug', error.message);
+
+      if (process.env.NODE_ENV === "development") {
+        errorParams.set("debug", error.message);
       }
 
       const errorRedirect = `/auth/login?${errorParams.toString()}`;
@@ -142,14 +158,14 @@ const Topheader = () => {
       // Triple-layered redirect assurance
       navigate(errorRedirect, { replace: true });
       setTimeout(() => {
-        if (!window.location.pathname.startsWith('/auth/login')) {
+        if (!window.location.pathname.startsWith("/auth/login")) {
           window.location.assign(errorRedirect);
         }
       }, 500);
 
       // Final fallback after 2 seconds
       setTimeout(() => {
-        window.location.href = '/auth/login?force_logout=true';
+        window.location.href = "/auth/login?force_logout=true";
       }, 2000);
     }
   };
@@ -157,17 +173,17 @@ const Topheader = () => {
     const checkAuthStatus = async () => {
       console.log("Checking authentication status...");
       try {
-        const response = await axios.get('/hi/users/check', {
+        const response = await axios.get("/hi/users/check", {
           withCredentials: true,
           headers: {
-            'Cache-Control': 'no-cache',
-            'Accept': 'application/json'
+            "Cache-Control": "no-cache",
+            Accept: "application/json",
           },
-          timeout: 5000 // 5 second timeout
+          timeout: 5000, // 5 second timeout
         });
-  
+
         console.log("Auth check response:", response.data);
-        
+
         if (response.data?.loggedIn) {
           setIsUserSignedIn(true);
           console.log("User is authenticated");
@@ -175,45 +191,45 @@ const Topheader = () => {
           setIsUserSignedIn(false);
           console.log("User is not authenticated");
           // Clear any invalid tokens
-          document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          document.cookie =
+            "authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
         }
       } catch (error) {
         setIsUserSignedIn(false);
-        
+
         // Detailed error analysis
-        if (error.code === 'ECONNABORTED') {
-          console.error('Auth check timeout - server might be slow');
+        if (error.code === "ECONNABORTED") {
+          console.error("Auth check timeout - server might be slow");
         } else if (error.response) {
           // Server responded with status code outside 2xx
-          console.error('Auth check failed with status:', error.response.status);
-          console.error('Response data:', error.response.data);
+          console.error(
+            "Auth check failed with status:",
+            error.response.status
+          );
+          console.error("Response data:", error.response.data);
         } else if (error.request) {
           // No response received
-          console.error('No response from auth check - network error');
+          console.error("No response from auth check - network error");
         } else {
           // Request setup error
-          console.error('Error setting up auth check:', error.message);
+          console.error("Error setting up auth check:", error.message);
         }
-  
+
         // Clear potentially invalid credentials
-        document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        document.cookie =
+          "authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
       }
     };
-  
+
     // Initial check
     checkAuthStatus();
-  
+
     // Set up periodic checks (every 1 minute)
     const intervalId = setInterval(checkAuthStatus, 60000);
-    
+
     // Cleanup interval on unmount
     return () => clearInterval(intervalId);
   }, []);
-
-
-  
-
-
 
   return (
     <>
@@ -227,14 +243,17 @@ const Topheader = () => {
             />
           </div>
         </Link>
+        {/* //search bar */}
+        <SearchBar></SearchBar>
 
-        <form className="lg:min-w-[600px] md:max-w-[200px] mx-auto">
+        {/* <form className="lg:min-w-[600px] md:max-w-[200px] mx-auto">
           <label
             for="default-search"
             className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
           >
             Search
           </label>
+
           <div className="relative">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
               <svg
@@ -267,7 +286,7 @@ const Topheader = () => {
               Search
             </button>
           </div>
-        </form>
+        </form> */}
         {/* <ProductSearch/> */}
         <div className="flex">
           <button className="mx-3">
@@ -292,16 +311,25 @@ const Topheader = () => {
               <div className=" z-50 w-[300px] translate-x-[-250px] absolute mt-3 bg-[#121212] border-[1px] p-3  hover:underline-offset-8">
                 {isUserSignedIn ? (
                   <div onClick={handleLogout}>
-                  <HeaderItems  name={"logout"} Icon={MdAccountCircle} />
+                    <HeaderItems name={"logout"} Icon={MdAccountCircle}  />
                   </div>
                 ) : (
                   <Link to="/auth/signin">
                     {" "}
-                    <HeaderItems name={"login/signup"} Icon={MdAccountCircle} />
+                    <HeaderItems
+                      name={"login/signup"}
+                      Icon={MdAccountCircle}
+                    />
                   </Link>
                 )}
                 {profileMenu.map((item, index) => (
-                  <HeaderItems  key={index} name={item.name} Icon={item.icon} />
+                  <HeaderItems
+                    key={index}
+                    name={item.name}
+                    Icon={item.icon}
+                    link={item.link}
+                    
+                  />
                 ))}
               </div>
             ) : null}

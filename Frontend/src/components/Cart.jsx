@@ -4,6 +4,8 @@ import axios from 'axios';
 import GlobalApi from '../Services/GlobalApi';
 import CardOfcart from './cartCompo/CardOfcart';
 import CheckoutDialog from './address';
+import Cookies from 'js-cookie'; // Import cookie library
+
 
 const Cart = () => {
   const [cartItem, setCartItem] = useState([]);
@@ -15,9 +17,12 @@ const Cart = () => {
 
   // Fetch Cart Items from API
   const fetchCart = async () => {
-    try {
-      const response = await axios.post("/hi/carts/getitems",{
+    console.log("fetching cart authtoken is : ", Cookies.get("authToken"))
 
+    try {
+      const authToken = Cookies.get("authToken")
+      const response = await axios.post("/hi/carts/getitems",{
+          authToken: authToken,
       });
       console.log("Cart Data Received:", response.data);
   
@@ -79,10 +84,14 @@ const Cart = () => {
   };
 
   const placeOrder = async(formData )=>{
-    const {paymentMethod, deliveryAddress, phoneNumber} = formData
-    try{
 
+    const {paymentMethod, deliveryAddress, phoneNumber} = formData
+    const authToken = Cookies.get("authToken");
+
+        console.log("palcing order authtoken is : ", authToken)
+    try{
       const res = await axios.post("/hi/orders/checkout",{
+        authToken: authToken,
         paymentMethod:paymentMethod,
         deliveryAddress:deliveryAddress,
         phoneNumber:phoneNumber

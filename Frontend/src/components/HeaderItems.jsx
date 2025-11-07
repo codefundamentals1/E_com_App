@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const HeaderItems = ({name , Icon}) => {
+const HeaderItems = ({name , Icon,link}, onclick) => {
   return (
     <>
     <a href={'/'}>

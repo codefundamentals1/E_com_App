@@ -13,7 +13,6 @@ const GenreItemList = () => {
                     <h2 className='text-white text-[20px] font-bold '>{item.name}</h2>
                     <ItemList  category = {item.category}/>         
                 </div>
-
         ))}
 
     </div>

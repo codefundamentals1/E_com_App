@@ -14,6 +14,7 @@ async function getOrCreateCart(userId) {
   if (!cart) {
     cart = new Cart({ createdBy: userId });
     await cart.save();
+    console.log("created new cart ," ,cart)
   }
   return cart;
 }
@@ -34,6 +35,7 @@ router.post('/items', authenticate, async (req, res) => {
   console.log("get cart recived")
   try {
     const userId = req.user.id;
+    // console.log("userid id" , userId)
     const { productId, quantity } = req.body;
     console.log("User id" +userId + " productid"+ productId +" quantity"+ quantity)
     if (!productId || !quantity || quantity <= 0) {
@@ -41,6 +43,8 @@ router.post('/items', authenticate, async (req, res) => {
     }
 
     const product = await fetchProduct(productId);
+        console.log("product found" , product);
+
     const minOrderSize = product.minimum_order_size || 1;
 
     const cart = await getOrCreateCart(userId);
@@ -51,11 +55,12 @@ router.post('/items', authenticate, async (req, res) => {
         return res.status(400).json({
           error: `Minimum order quantity for this product is ${minOrderSize}.`
         });
-      }
 
+      }
       cartItem = new CartItem({
         cartId: cart._id,
         productId,
+        sellerId:product.seller_id,
         price: parseFloat(product.final_price),
         quantity,
       });
@@ -72,16 +77,16 @@ router.post('/items', authenticate, async (req, res) => {
 });
 
 // Increase item quantity
-router.post('/items/increase',  async (req, res) => {
+router.post('/items/increase', authenticate, async (req, res) => {
   try {
-    // const userId = req.user.id;
+    const userId = req.user.id;
     const { productId } = req.body;
 
     if (!productId) {
       return res.status(400).json({ error: 'Missing productId.' });
     }
 
-    const cart = await getOrCreateCart("63d5a0dd-ba82-4467-8193-a333aa6851e0");
+    const cart = await getOrCreateCart(userId);
     const cartItem = await CartItem.findOne({ cartId: cart._id, productId });
 
     if (!cartItem) {
@@ -97,9 +102,9 @@ router.post('/items/increase',  async (req, res) => {
 });
 
 // Decrease item quantity
-router.post('/items/decrease',  async (req, res) => {
+router.post('/items/decrease', authenticate, async (req, res) => {
   try {
-    // const userId = req.user.id;
+    const userId = req.user.id;
     const { productId } = req.body;
     console.log(req.body)
 
@@ -107,7 +112,7 @@ router.post('/items/decrease',  async (req, res) => {
       return res.status(400).json({ error: 'Missing productId.' });
     }
 
-    const cart = await getOrCreateCart("63d5a0dd-ba82-4467-8193-a333aa6851e0");
+    const cart = await getOrCreateCart(userId);
     const cartItem = await CartItem.findOne({ cartId: cart._id, productId });
 
     if (!cartItem) {
@@ -128,9 +133,9 @@ router.post('/items/decrease',  async (req, res) => {
 });
 
 // Remove an item
-router.post('/items/remove', async (req, res) => {
+router.post('/items/remove',authenticate, async (req, res) => {
   try {
-    // const userId = req.user.id;
+    const userId = req.user.id;
     const { productId } = req.body;
     console.log("remove item cart",req)
 
@@ -138,13 +143,13 @@ router.post('/items/remove', async (req, res) => {
       return res.status(400).json({ error: 'Missing productId.' });
     }
 
-    const cart = await getOrCreateCart("63d5a0dd-ba82-4467-8193-a333aa6851e0");
+    const cart = await getOrCreateCart(userId);
     const cartItem = await CartItem.findOneAndDelete({ cartId: cart._id, productId });
 
     if (!cartItem) {
       return res.status(404).json({ error: 'Item not found in cart.' });
     }
-
+    
     res.json({ message: 'Item removed successfully.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -152,12 +157,16 @@ router.post('/items/remove', async (req, res) => {
 });
 
 // List all items in the cart
-router.post('/getitems', async (req, res) => {
+router.post('/getitems', authenticate,async (req, res) => {
+  console.log("fetching cart")
+    const userId = req.user.id;
+  console.log("recieved userid is" , userId)
   try {
-    console.log("fetching cart")
     
-    const cart = await getOrCreateCart("63d5a0dd-ba82-4467-8193-a333aa6851e0");
+    const cart = await getOrCreateCart(userId);
+    // console.log("cart is",cart)
     const items = await CartItem.find({ cartId: cart._id });
+    // console.log(items)
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -8,7 +8,7 @@ const ProdPagetemp = () => {
     <Productpage></Productpage>
     {/* //review page is temporay removed cause of database attribute problem  */}
     
-    {/* <ReviewPage></ReviewPage> */}
+    <ReviewPage></ReviewPage>
      </>
    
   );

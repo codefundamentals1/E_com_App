@@ -9,6 +9,7 @@ const authenticate = (req, res, next) => {
     console.log("no cookie")
   } 
   const token = req.body?.authToken;
+  console.log("authttokeni is " , req.body.authToken)
   // if (!authHeader) {
   //   return res.status(401).json({ error: 'Access denied. No token provided.' });
   // }

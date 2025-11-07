@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import { IoMdAdd , IoMdRemove } from "react-icons/io";
 import axios from 'axios';
+import Cookies from "js-cookie"
 
 const CardOfcart = ({item ,updateItemCount, fetchCart}) => {
 const [itemcount , setItemcount] = useState(item.count)
   
     const handleremovebutton = async (id) => {
       try {
-        // console.log("removing item "+id)
-        const response = await axios.post('/hi/carts/items/remove', { productId: id });
+                const authToken = Cookies.get("authToken")
+        console.log("removing item "+id)
+        const response = await axios.post('/hi/carts/items/remove', { productId: id, authToken:authToken });
         console.log("Item removed:", response.data);
         // updateItemCount(item.id, 0); // Update count in parent
         // window.location.reload()
@@ -19,8 +21,9 @@ const [itemcount , setItemcount] = useState(item.count)
     };
     const handleDecButton = async (id) => {
       try {
+                const authToken = Cookies.get("authToken")
         console.log("removing item "+id)
-        const response = await axios.post('/hi/carts/items/decrease', { productId: id });
+        const response = await axios.post('/hi/carts/items/decrease', { productId: id , authToken: authToken});
         console.log("Item removed:", response.data);
         { itemcount === 1?(setItemcount(itemcount) ):setItemcount(itemcount-1);
         }
@@ -33,8 +36,10 @@ const [itemcount , setItemcount] = useState(item.count)
   
     const handleIncButton = async (id) => {
       try {
-        console.log("adding item "+id)
-        const response = await axios.post('/hi/carts/items/increase', { productId: id });
+        const authToken = Cookies.get("authToken")
+        
+        console.log("adding item "+id+"to user :" , authToken)
+        const response = await axios.post('/hi/carts/items/increase', { productId: id, authToken: authToken });
         console.log("Item added:", response.data);
         setItemcount(itemcount+1);
         updateItemCount(item.id, item.count + 1); // Update count in parent

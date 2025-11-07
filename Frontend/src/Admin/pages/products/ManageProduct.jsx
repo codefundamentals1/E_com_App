@@ -59,12 +59,31 @@ const ManageProduct = () => {
     fetchProducts();
   }, []);
 
-  const handleInputChange = (key, value) => {
-    setFields({
-      ...fields,
-      [key]: value,
-    });
-  };
+const [query, setQuery] = useState("");
+
+const handlesearch = async () => {
+  console.log("searching:", query);
+  console.log(`hi/products/search?query=${query}`);
+
+  try {
+    const response = await axios.get(`/hi/products/search?query=${query}`);
+
+    console.log("Search results:", response.data);
+    setProducts(response.data)
+  } catch (error) {
+    console.error("Error occurred during fetch:", error);
+  }
+};
+  const handleInputChange = async (key, value) => {
+  console.log(value);
+setQuery(value)
+  // Update the field value in state
+  setFields({
+    ...fields,
+    [key]: value,
+  });
+
+};
 
   const bulkAction = [
     { value: "delete", label: "Delete" },
@@ -154,6 +173,7 @@ const ManageProduct = () => {
   //     navigate(`/catalog/product/manage/${itemID}`);
   //   }
   // };
+  
   const handleActionItemClick = async (item, itemID, seller_id) => {
     const action = item.toLowerCase();
     if (action === "delete") {
@@ -310,8 +330,11 @@ const ManageProduct = () => {
               <Input
                 placeholder="Search Product..."
                 className="sm table_search"
-                onChange={(value) => handleInputChange("search", value)}
+                onChange={(value) =>  handleInputChange("search", value)}
+                
               />
+              <button onClick={handlesearch}>search</button>
+              
               <Offcanvas
                 isOpen={isOffcanvasOpen}
                 onClose={handleCloseOffcanvas}
